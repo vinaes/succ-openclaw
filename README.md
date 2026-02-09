@@ -71,6 +71,8 @@ OpenClaw plugin that replaces native memory with [succ](https://github.com/Vinae
 | `memory_prd_run` | Execute PRD with branch isolation and auto-commit |
 | `memory_prd_export` | Export to Obsidian with Mermaid diagrams |
 
+**Injects system prompt** with tool documentation (~1200 tokens) so the agent knows how to use all 27 tools without runtime discovery.
+
 ## Install
 
 ```bash
@@ -101,6 +103,8 @@ Restart OpenClaw. The plugin will:
 2. Initialize local embeddings (Transformers.js, ~384 dimensions)
 3. Replace native memory tools with succ-powered versions
 4. Register all 27 tools
+5. Inject system prompt with tool usage guide
+6. Hook into compaction, file changes, and shutdown
 
 ## Config options
 
@@ -152,12 +156,18 @@ When files change in the workspace:
 2. Checks file extension is indexable
 3. Re-indexes with content hash comparison
 
+### System prompt injection
+
+If the host supports `api.prompts.appendSystem()`, the plugin injects a compact (~1200 token) reference covering all 27 tools by category with usage patterns. Gracefully skipped if not supported.
+
 ### Markdown bridge (optional)
 
 When `markdownBridge: true`:
 - New memories → exported to `.succ/brain/` as dated Markdown
 - File changes in `.succ/brain/` → imported back to succ DB
 - Preserves human-readable file transparency
+- Type detection from filename (`decision`, `learning`, `dead_end`, etc.)
+- Duplicate prevention via Memory ID footer
 
 ## Security
 
@@ -197,6 +207,29 @@ When `markdownBridge: true`:
 | Web search | No | No | Yes (3 tiers) |
 | PRD pipeline | No | No | Yes |
 | Local-first | Partial | No | Yes |
+
+## Plugin manifest
+
+The `openclaw.plugin.json` file provides auto-discovery metadata:
+- Full config schema with types, defaults, and descriptions
+- Capabilities declaration (replaced tools, registered tools, hooks, prompts)
+- Engine requirements and peer dependencies
+
+## Testing
+
+```bash
+npm test
+```
+
+145 tests across 19 test files covering:
+- All 27 tools (unit tests with mocked succ storage)
+- Registration flow (config override order, tool counts, hooks)
+- System prompt generation (XML structure, tool coverage, compactness)
+- Markdown bridge (export/import, slug generation, type detection, security)
+- Compaction hook (summary extraction, TTL, error resilience, message windowing)
+- File change hook (extension filtering, ignored directories, SHA-256 hashing, security)
+- Security (path traversal prevention, workspace boundary, brain vault boundary)
+- Init (auto-create `.succ/`, skip if exists)
 
 ## Requirements
 
