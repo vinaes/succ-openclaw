@@ -1,64 +1,105 @@
 {
-  "id": "@succ/openclaw-succ",
-  "name": "succ Memory",
+  "$schema": "https://openclaw.dev/schemas/plugin.json",
+  "name": "@succ/openclaw-succ",
+  "displayName": "succ Memory",
   "version": "0.1.0",
-  "description": "Replaces OpenClaw native memory with succ — hybrid search (BM25 + semantic), typed memories, knowledge graph, dead-end tracking, temporal queries",
-  "author": "succ team",
-  "openclaw": {
-    "minVersion": "0.1.0"
+  "description": "Replaces native memory with succ — hybrid search, knowledge graph, structured memories, dead-end tracking, web search, and PRD pipeline.",
+  "author": "cpz",
+  "license": "FSL-1.1-Apache-2.0",
+  "homepage": "https://github.com/Vinaes/succ-openclaw",
+  "repository": "https://github.com/Vinaes/succ-openclaw",
+  "main": "dist/index.js",
+  "engines": {
+    "openclaw": ">=0.1.0",
+    "node": ">=22.0.0"
   },
   "capabilities": {
-    "tools": [
-      "memory_search",
-      "memory_get",
-      "memory_store",
-      "memory_link",
-      "memory_dead_end",
-      "memory_explore",
-      "memory_forget",
-      "memory_index"
-    ],
-    "hooks": [
-      "beforeCompact",
-      "shutdown"
-    ],
-    "providers": []
+    "tools": {
+      "replaces": ["memory_search", "memory_get"],
+      "registers": [
+        "memory_store",
+        "memory_recall",
+        "memory_forget",
+        "memory_dead_end",
+        "memory_link",
+        "memory_explore",
+        "memory_index",
+        "memory_index_code",
+        "memory_analyze",
+        "memory_reindex",
+        "memory_quick_search",
+        "memory_web_search",
+        "memory_deep_research",
+        "memory_web_history",
+        "memory_status",
+        "memory_stats",
+        "memory_score",
+        "memory_config",
+        "memory_config_set",
+        "memory_checkpoint",
+        "memory_prd_generate",
+        "memory_prd_list",
+        "memory_prd_status",
+        "memory_prd_run",
+        "memory_prd_export"
+      ]
+    },
+    "hooks": ["beforeCompact", "fileChanged", "shutdown"],
+    "prompts": ["appendSystem"]
   },
-  "configSchema": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "autoInit": {
-        "type": "boolean",
-        "default": true,
-        "description": "Auto-initialize .succ/ directory if missing"
-      },
-      "markdownBridge": {
-        "type": "boolean",
-        "default": false,
-        "description": "Bidirectional sync between succ DB and Markdown files"
-      },
-      "embeddingMode": {
-        "type": "string",
-        "enum": ["local", "openrouter", "custom"],
-        "default": "local",
-        "description": "Embedding generation mode"
-      },
-      "maxSearchResults": {
-        "type": "number",
-        "default": 10,
-        "description": "Default max results for memory_search"
-      },
-      "snippetMaxChars": {
-        "type": "number",
-        "default": 700,
-        "description": "Max snippet length in search results"
-      }
+  "config": {
+    "autoInit": {
+      "type": "boolean",
+      "default": true,
+      "description": "Auto-create .succ/ directory on first load if missing."
+    },
+    "markdownBridge": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enable bidirectional sync between succ DB and .succ/brain/ Markdown files."
+    },
+    "embeddingMode": {
+      "type": "string",
+      "enum": ["local", "openrouter", "custom"],
+      "default": "local",
+      "description": "Embedding model backend. 'local' uses Transformers.js (no API key needed)."
+    },
+    "storageBackend": {
+      "type": "string",
+      "enum": ["sqlite", "postgresql"],
+      "default": "sqlite",
+      "description": "Database backend. SQLite for local-first, PostgreSQL for team/cloud."
+    },
+    "analyzeMode": {
+      "type": "string",
+      "enum": ["claude", "openrouter", "local"],
+      "default": "claude",
+      "description": "LLM backend for file analysis. 'claude' uses Claude CLI, 'local' uses Ollama."
+    },
+    "openrouterApiKey": {
+      "type": "string",
+      "description": "OpenRouter API key for cloud embeddings, analysis, and web search."
+    },
+    "maxSearchResults": {
+      "type": "number",
+      "default": 10,
+      "description": "Maximum results returned by memory_search."
+    },
+    "snippetMaxChars": {
+      "type": "number",
+      "default": 700,
+      "description": "Maximum characters per search result snippet."
     }
   },
-  "uiHints": {
-    "autoInit": { "label": "Auto-initialize" },
-    "markdownBridge": { "label": "Markdown Bridge" },
-    "embeddingMode": { "label": "Embedding Mode" }
-  }
+  "peerDependencies": {
+    "succ": ">=1.1.0"
+  },
+  "keywords": [
+    "memory",
+    "semantic-search",
+    "knowledge-graph",
+    "rag",
+    "embeddings",
+    "ai-agent"
+  ]
 }
