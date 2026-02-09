@@ -29,6 +29,9 @@ export interface SuccPluginConfig {
   autoInit: boolean;
   markdownBridge: boolean;
   embeddingMode: 'local' | 'openrouter' | 'custom';
+  storageBackend: 'sqlite' | 'postgresql';
+  analyzeMode: 'claude' | 'openrouter' | 'local';
+  openrouterApiKey?: string;
   maxSearchResults: number;
   snippetMaxChars: number;
 }
@@ -37,6 +40,8 @@ export const DEFAULT_CONFIG: SuccPluginConfig = {
   autoInit: true,
   markdownBridge: false,
   embeddingMode: 'local',
+  storageBackend: 'sqlite',
+  analyzeMode: 'claude',
   maxSearchResults: 10,
   snippetMaxChars: 700,
 };

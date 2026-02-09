@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { initStorageDispatcher, closeStorageDispatcher } from 'succ/api';
+import { initStorageDispatcher, closeStorageDispatcher, setConfigOverride } from 'succ/api';
 import { initializeSuccProject, isSuccInitialized } from './init.js';
 import { memorySearch, memorySearchSchema } from './tools/memory-search.js';
 import { memoryGet, memoryGetSchema } from './tools/memory-get.js';
@@ -69,6 +69,9 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
     autoInit: api.config.get('autoInit', DEFAULT_CONFIG.autoInit),
     markdownBridge: api.config.get('markdownBridge', DEFAULT_CONFIG.markdownBridge),
     embeddingMode: api.config.get('embeddingMode', DEFAULT_CONFIG.embeddingMode),
+    storageBackend: api.config.get('storageBackend', DEFAULT_CONFIG.storageBackend),
+    analyzeMode: api.config.get('analyzeMode', DEFAULT_CONFIG.analyzeMode),
+    openrouterApiKey: api.config.get('openrouterApiKey', DEFAULT_CONFIG.openrouterApiKey),
     maxSearchResults: api.config.get('maxSearchResults', DEFAULT_CONFIG.maxSearchResults),
     snippetMaxChars: api.config.get('snippetMaxChars', DEFAULT_CONFIG.snippetMaxChars),
   };
@@ -86,11 +89,22 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
     await initializeSuccProject(workspaceRoot);
   }
 
-  // 4. Initialize storage (DB connection, embeddings)
+  // 4. Apply plugin config overrides to succ core
+  const succOverrides: Record<string, unknown> = {
+    embedding_mode: config.embeddingMode,
+    storage: { backend: config.storageBackend },
+    analyze_mode: config.analyzeMode,
+  };
+  if (config.openrouterApiKey) {
+    succOverrides.openrouter_api_key = config.openrouterApiKey;
+  }
+  setConfigOverride(succOverrides as any);
+
+  // 5. Initialize storage (DB connection, embeddings)
   await initStorageDispatcher();
 
   // ========================================================================
-  // 5. Replace native memory tools
+  // 6. Replace native memory tools
   // ========================================================================
 
   api.tools.replace('memory_search', {
@@ -112,7 +126,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
   });
 
   // ========================================================================
-  // 6. Register new tools — core memory
+  // 7. Register new tools — core memory
   // ========================================================================
 
   api.tools.register('memory_store', {
@@ -149,7 +163,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
   });
 
   // ========================================================================
-  // 7. Knowledge graph
+  // 8. Knowledge graph
   // ========================================================================
 
   api.tools.register('memory_link', {
@@ -173,7 +187,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
   });
 
   // ========================================================================
-  // 8. Indexing & analysis
+  // 9. Indexing & analysis
   // ========================================================================
 
   api.tools.register('memory_index', {
@@ -208,7 +222,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
   });
 
   // ========================================================================
-  // 9. Web search
+  // 10. Web search
   // ========================================================================
 
   api.tools.register('memory_quick_search', {
@@ -255,7 +269,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
   });
 
   // ========================================================================
-  // 10. Status & config
+  // 11. Status & config
   // ========================================================================
 
   api.tools.register('memory_status', {
@@ -294,7 +308,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
   });
 
   // ========================================================================
-  // 11. Checkpoints
+  // 12. Checkpoints
   // ========================================================================
 
   api.tools.register('memory_checkpoint', {
@@ -307,7 +321,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
   });
 
   // ========================================================================
-  // 12. PRD pipeline
+  // 13. PRD pipeline
   // ========================================================================
 
   api.tools.register('memory_prd_generate', {
@@ -349,13 +363,13 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
   });
 
   // ========================================================================
-  // 13. Hooks
+  // 14. Hooks
   // ========================================================================
 
   api.hooks.on('beforeCompact', onBeforeCompact);
   api.hooks.on('fileChanged', onFileChanged);
 
-  // 14. Cleanup on shutdown
+  // 15. Cleanup on shutdown
   api.hooks.on('shutdown', async () => {
     await closeStorageDispatcher();
   });

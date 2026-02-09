@@ -87,8 +87,9 @@ Add to your `openclaw.json`:
     "entries": {
       "@succ/openclaw-succ": {
         "autoInit": true,
-        "markdownBridge": false,
-        "embeddingMode": "local"
+        "embeddingMode": "local",
+        "storageBackend": "sqlite",
+        "analyzeMode": "claude"
       }
     }
   }
@@ -108,8 +109,13 @@ Restart OpenClaw. The plugin will:
 | `autoInit` | `true` | Auto-create `.succ/` if missing |
 | `markdownBridge` | `false` | Bidirectional sync: succ DB ↔ Markdown files |
 | `embeddingMode` | `"local"` | `local` (Transformers.js), `openrouter` (cloud), `custom` (Ollama) |
+| `storageBackend` | `"sqlite"` | `sqlite` (local, zero-config) or `postgresql` (requires connection via `.succ/config.json`) |
+| `analyzeMode` | `"claude"` | LLM for `memory_analyze`: `claude` (CLI), `openrouter` (cloud), `local` (Ollama/LM Studio) |
+| `openrouterApiKey` | — | OpenRouter API key (for `openrouter` embedding/analyze/web search modes) |
 | `maxSearchResults` | `10` | Default max results for memory_search |
 | `snippetMaxChars` | `700` | Max snippet length in search results |
+
+These options are **convenience shortcuts** — they override the equivalent settings in `.succ/config.json`. For fine-grained control (batch sizes, GPU, quality scoring thresholds, etc.), edit `.succ/config.json` directly.
 
 ## How it works
 
