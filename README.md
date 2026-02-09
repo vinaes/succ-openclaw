@@ -9,7 +9,7 @@ OpenClaw plugin that replaces native memory with [succ](https://github.com/Vinae
 - Brain vault documentation
 - Structured memories (observations, decisions, learnings, errors, patterns)
 
-**Adds 25 new tools** that OpenClaw doesn't have:
+**Adds 26 new tools** that OpenClaw doesn't have:
 
 ### Core memory
 
@@ -61,6 +61,12 @@ OpenClaw plugin that replaces native memory with [succ](https://github.com/Vinae
 |------|-------------|
 | `memory_checkpoint` | Create/list backups of memories, documents, brain vault |
 
+### Debug sessions
+
+| Tool | Description |
+|------|-------------|
+| `memory_debug` | Structured debugging with hypothesis testing — 12 actions, 14 languages, dead-end integration |
+
 ### PRD pipeline
 
 | Tool | Description |
@@ -71,7 +77,7 @@ OpenClaw plugin that replaces native memory with [succ](https://github.com/Vinae
 | `memory_prd_run` | Execute PRD with branch isolation and auto-commit |
 | `memory_prd_export` | Export to Obsidian with Mermaid diagrams |
 
-**Injects system prompt** with tool documentation (~1200 tokens) so the agent knows how to use all 27 tools without runtime discovery.
+**Injects system prompt** with tool documentation (~1200 tokens) so the agent knows how to use all 28 tools without runtime discovery.
 
 ## Install
 
@@ -102,7 +108,7 @@ Restart OpenClaw. The plugin will:
 1. Create `.succ/` directory in your workspace (if `autoInit: true`)
 2. Initialize local embeddings (Transformers.js, ~384 dimensions)
 3. Replace native memory tools with succ-powered versions
-4. Register all 27 tools
+4. Register all 28 tools
 5. Inject system prompt with tool usage guide
 6. Hook into compaction, file changes, and shutdown
 
@@ -158,7 +164,7 @@ When files change in the workspace:
 
 ### System prompt injection
 
-If the host supports `api.prompts.appendSystem()`, the plugin injects a compact (~1200 token) reference covering all 27 tools by category with usage patterns. Gracefully skipped if not supported.
+If the host supports `api.prompts.appendSystem()`, the plugin injects a compact (~1200 token) reference covering all 28 tools by category with usage patterns. Gracefully skipped if not supported.
 
 ### Markdown bridge (optional)
 
@@ -192,7 +198,7 @@ When `markdownBridge: true`:
 | AI readiness | None | Scoring and improvement recommendations |
 | Cross-project | Per-workspace | Global memory mode |
 | Code search | General semantic | AST-aware |
-| Tools | 2 | 27 |
+| Tools | 2 | 28 |
 
 ## vs Mem0 / Cognee
 
@@ -222,7 +228,7 @@ npm test
 ```
 
 145 tests across 19 test files covering:
-- All 27 tools (unit tests with mocked succ storage)
+- All 28 tools (unit tests with mocked succ storage)
 - Registration flow (config override order, tool counts, hooks)
 - System prompt generation (XML structure, tool coverage, compactness)
 - Markdown bridge (export/import, slug generation, type detection, security)

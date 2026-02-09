@@ -41,7 +41,8 @@
         "memory_prd_list",
         "memory_prd_status",
         "memory_prd_run",
-        "memory_prd_export"
+        "memory_prd_export",
+        "memory_debug"
       ]
     },
     "hooks": ["beforeCompact", "fileChanged", "shutdown"],

@@ -40,6 +40,7 @@ import {
   memoryReindex,
   memoryReindexSchema,
 } from './tools/memory-analyze.js';
+import { memoryDebug, memoryDebugSchema } from './tools/memory-debug.js';
 import {
   memoryPrdGenerate,
   memoryPrdGenerateSchema,
@@ -322,7 +323,21 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
   });
 
   // ========================================================================
-  // 13. PRD pipeline
+  // 13. Debug sessions
+  // ========================================================================
+
+  api.tools.register('memory_debug', {
+    name: 'memory_debug',
+    description:
+      'Structured debugging with hypothesis testing. 12 actions: create, hypothesis, instrument, result, ' +
+      'resolve, abandon, status, list, log, show_log, detect_lang, gen_log. ' +
+      'Supports 14 programming languages. Integrates with memory_dead_end for refuted hypotheses.',
+    schema: memoryDebugSchema.shape as Record<string, unknown>,
+    execute: memoryDebug,
+  });
+
+  // ========================================================================
+  // 14. PRD pipeline
   // ========================================================================
 
   api.tools.register('memory_prd_generate', {
@@ -364,7 +379,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
   });
 
   // ========================================================================
-  // 14. System prompt injection
+  // 15. System prompt injection
   // ========================================================================
 
   if (api.prompts?.appendSystem) {
@@ -372,7 +387,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
   }
 
   // ========================================================================
-  // 15. Hooks
+  // 16. Hooks
   // ========================================================================
 
   api.hooks.on('beforeCompact', onBeforeCompact);
@@ -383,7 +398,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
     await closeStorageDispatcher();
   });
 
-  console.log(`[succ] Plugin loaded — 27 tools registered (${isSuccInitialized(workspaceRoot) ? 'project initialized' : 'global-only mode'})`);
+  console.log(`[succ] Plugin loaded — 28 tools registered (${isSuccInitialized(workspaceRoot) ? 'project initialized' : 'global-only mode'})`);
 }
 
 // Re-export for programmatic use
@@ -400,6 +415,7 @@ export { memoryQuickSearch, memoryWebSearch, memoryDeepResearch } from './tools/
 export { memoryStatus, memoryStats, memoryScore, memoryConfig, memoryConfigSet } from './tools/memory-status.js';
 export { memoryCheckpoint } from './tools/memory-checkpoint.js';
 export { memoryAnalyze, memoryIndexCode, memoryReindex } from './tools/memory-analyze.js';
+export { memoryDebug } from './tools/memory-debug.js';
 export { memoryPrdGenerate, memoryPrdList, memoryPrdStatus, memoryPrdRun, memoryPrdExport } from './tools/memory-prd.js';
 export { exportMemoriesToMarkdown, importMarkdownToMemory } from './bridge/markdown-bridge.js';
 export type { SuccPluginConfig, OpenClawPluginAPI, OpenClawSearchResult, OpenClawGetResult } from './types.js';

@@ -9,7 +9,7 @@
 /**
  * Generate the system prompt section for succ memory tools.
  *
- * Designed to be compact (~1200 tokens) while covering all 27 tools with
+ * Designed to be compact (~1300 tokens) while covering all 28 tools with
  * usage patterns that help the agent make good tool choices.
  */
 export function generateSystemPrompt(): string {
@@ -57,6 +57,10 @@ You have access to an advanced memory system powered by succ. Use these tools fo
 ## Checkpoints
 
 - **memory_checkpoint(action)** — Create or list backups of memories and brain vault.
+
+## Debug Sessions
+
+- **memory_debug(action, ...)** — Structured debugging with hypothesis testing. 12 actions: create, hypothesis, instrument, result, resolve, abandon, status, list, log, show_log, detect_lang, gen_log. Supports 14 languages. Use with memory_dead_end for refuted hypotheses.
 
 ## PRD Pipeline
 
