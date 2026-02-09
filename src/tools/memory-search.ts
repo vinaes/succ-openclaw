@@ -32,9 +32,9 @@ export async function memorySearch(
   const embedding = await getEmbedding(query);
 
   const [codeResults, docsResults, memoryResults] = await Promise.all([
-    hybridSearchCode(query, embedding, maxResults, 0.25).catch(() => []),
-    hybridSearchDocs(query, embedding, maxResults, 0.2).catch(() => []),
-    hybridSearchMemories(query, embedding, maxResults, 0.3).catch(() => []),
+    hybridSearchCode(query, embedding, maxResults, 0.25).catch((err) => { console.warn('[succ] Code search failed:', err.message); return []; }),
+    hybridSearchDocs(query, embedding, maxResults, 0.2).catch((err) => { console.warn('[succ] Docs search failed:', err.message); return []; }),
+    hybridSearchMemories(query, embedding, maxResults, 0.3).catch((err) => { console.warn('[succ] Memory search failed:', err.message); return []; }),
   ]);
 
   const merged: OpenClawSearchResult[] = [

@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { getRecentMemories, saveMemory, getEmbedding } from 'succ/api';
 import type { MemoryType } from 'succ/api';
+import { assertPathWithinBrainVault } from '../security.js';
 
 /**
  * Markdown bridge — optional bidirectional sync between succ DB and Markdown files.
@@ -33,7 +34,7 @@ export async function exportMemoriesToMarkdown(workspaceRoot: string, limit: num
       .substring(0, 40)
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
-      .replace(/-+$/, '');
+      .replace(/^-+|-+$/g, '') || 'untitled';
 
     const filename = `${date}-${type}-${mem.id}-${slug}.md`;
     const filepath = path.join(dir, filename);
@@ -63,9 +64,10 @@ export async function exportMemoriesToMarkdown(workspaceRoot: string, limit: num
  * Detects Memory ID in footer to avoid duplicates.
  */
 export async function importMarkdownToMemory(filePath: string): Promise<boolean> {
-  if (!fs.existsSync(filePath)) return false;
+  const safePath = assertPathWithinBrainVault(filePath);
+  if (!fs.existsSync(safePath)) return false;
 
-  const content = fs.readFileSync(filePath, 'utf-8');
+  const content = fs.readFileSync(safePath, 'utf-8');
 
   // If it already has a Memory ID, it was exported from succ — skip
   const idMatch = content.match(/\*Memory ID: (\d+)\*/);

@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import { z } from 'zod';
 import { getMemoryById } from 'succ/api';
 import { memorySearch } from './memory-search.js';
+import { assertPathWithinWorkspace } from '../security.js';
 import type { OpenClawGetResult } from '../types.js';
 
 export const memoryGetSchema = z.object({
@@ -22,17 +23,18 @@ type MemoryGetParams = z.infer<typeof memoryGetSchema>;
 export async function memoryGet(params: MemoryGetParams): Promise<OpenClawGetResult> {
   const { path: filePath, startLine, numLines } = params;
 
-  // Case 1: literal file path
-  if (fs.existsSync(filePath)) {
-    const fullContent = fs.readFileSync(filePath, 'utf-8');
+  // Case 1: literal file path (validated against workspace boundary)
+  const safePath = (() => { try { return assertPathWithinWorkspace(filePath, 'memory_get'); } catch { return null; } })();
+  if (safePath && fs.existsSync(safePath)) {
+    const fullContent = fs.readFileSync(safePath, 'utf-8');
     const lines = fullContent.split('\n');
 
     if (startLine !== undefined && numLines !== undefined) {
       const slice = lines.slice(startLine - 1, startLine - 1 + numLines);
-      return { content: slice.join('\n'), path: filePath, lineCount: slice.length };
+      return { content: slice.join('\n'), path: safePath, lineCount: slice.length };
     }
 
-    return { content: fullContent, path: filePath, lineCount: lines.length };
+    return { content: fullContent, path: safePath, lineCount: lines.length };
   }
 
   // Case 2: memory:ID

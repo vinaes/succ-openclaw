@@ -73,9 +73,12 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
     snippetMaxChars: api.config.get('snippetMaxChars', DEFAULT_CONFIG.snippetMaxChars),
   };
 
-  // 2. Detect workspace root
+  // 2. Detect workspace root and validate it's absolute
   const workspaceRoot = api.workspace.getRoot();
-  process.env.SUCC_PROJECT_ROOT = workspaceRoot;
+  if (!path.isAbsolute(workspaceRoot)) {
+    throw new Error(`[succ] Workspace root must be an absolute path, got: "${workspaceRoot}"`);
+  }
+  process.env.SUCC_PROJECT_ROOT = path.resolve(workspaceRoot);
 
   // 3. Auto-initialize .succ/ if needed
   if (config.autoInit && !isSuccInitialized(workspaceRoot)) {

@@ -59,8 +59,8 @@ async function doSearch(
       await saveMemory(answer, embedding, ['web-search', 'openclaw'], `web-search:${model}`, {
         type: 'observation' as any,
       });
-    } catch {
-      // Non-fatal: search result still returned
+    } catch (err) {
+      console.warn('[succ] Failed to save web search result to memory:', (err as Error).message);
     }
   }
 
@@ -99,8 +99,8 @@ export async function memoryDeepResearch(params: DeepResearchParams): Promise<{ 
       await saveMemory(answer, embedding, ['deep-research', 'openclaw'], `deep-research`, {
         type: 'observation' as any,
       });
-    } catch {
-      // Non-fatal
+    } catch (err) {
+      console.warn('[succ] Failed to save deep research result to memory:', (err as Error).message);
     }
   }
 

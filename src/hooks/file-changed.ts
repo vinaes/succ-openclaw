@@ -1,6 +1,8 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import { upsertDocument, getEmbedding, setFileHash } from 'succ/api';
 import { createHash } from 'node:crypto';
+import { assertPathWithinWorkspace } from '../security.js';
 
 /**
  * File change hook — re-indexes files when they change in the workspace.
@@ -13,12 +15,20 @@ export async function onFileChanged(event: any): Promise<void> {
     const filePath: string = event?.path ?? event?.filePath;
     if (!filePath) return;
 
+    // Validate path is within workspace boundary
+    let safePath: string;
+    try {
+      safePath = assertPathWithinWorkspace(filePath, 'file_changed_hook');
+    } catch {
+      return; // Silently skip files outside workspace
+    }
+
     // Only index markdown and common source files
-    if (!shouldIndex(filePath)) return;
+    if (!shouldIndex(safePath)) return;
 
-    if (!fs.existsSync(filePath)) return;
+    if (!fs.existsSync(safePath)) return;
 
-    const content = fs.readFileSync(filePath, 'utf-8');
+    const content = fs.readFileSync(safePath, 'utf-8');
     if (!content.trim()) return;
 
     const hash = createHash('sha256').update(content).digest('hex');
@@ -54,11 +64,14 @@ const INDEXABLE_EXTENSIONS = new Set([
 ]);
 
 function shouldIndex(filePath: string): boolean {
-  const ext = filePath.slice(filePath.lastIndexOf('.'));
+  const ext = filePath.slice(filePath.lastIndexOf('.')).toLowerCase();
   if (!INDEXABLE_EXTENSIONS.has(ext)) return false;
 
-  // Skip node_modules, .git, dist, build
-  if (/[/\\](node_modules|\.git|dist|build|\.next|__pycache__)[/\\]/.test(filePath)) return false;
+  // Skip node_modules, .git, dist, build — case-insensitive for Windows
+  const normalized = path.normalize(filePath);
+  const segments = normalized.split(path.sep);
+  const ignored = /^(node_modules|\.git|dist|build|\.next|__pycache__)$/i;
+  if (segments.some(seg => ignored.test(seg))) return false;
 
   return true;
 }

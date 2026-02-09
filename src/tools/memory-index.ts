@@ -7,6 +7,7 @@ import {
   setFileHash,
 } from 'succ/api';
 import { createHash } from 'node:crypto';
+import { assertPathWithinWorkspace } from '../security.js';
 
 export const memoryIndexSchema = z.object({
   path: z.string().describe('File path to index'),
@@ -23,12 +24,13 @@ type MemoryIndexParams = z.infer<typeof memoryIndexSchema>;
  */
 export async function memoryIndex(params: MemoryIndexParams): Promise<{ message: string; indexed: boolean }> {
   const { path: filePath, force } = params;
+  const safePath = assertPathWithinWorkspace(filePath, 'memory_index');
 
-  if (!fs.existsSync(filePath)) {
+  if (!fs.existsSync(safePath)) {
     throw new Error(`File not found: ${filePath}`);
   }
 
-  const content = fs.readFileSync(filePath, 'utf-8');
+  const content = fs.readFileSync(safePath, 'utf-8');
   const hash = createHash('sha256').update(content).digest('hex');
 
   if (!force) {

@@ -90,16 +90,19 @@ export async function memoryConfigSet(params: z.infer<typeof memoryConfigSetSche
   const path = await import('node:path');
   const os = await import('node:os');
 
+  const projectRoot = process.env.SUCC_PROJECT_ROOT || process.cwd();
   const configPath =
     scope === 'project'
-      ? path.join(process.cwd(), '.succ', 'config.json')
+      ? path.join(projectRoot, '.succ', 'config.json')
       : path.join(os.homedir(), '.succ', 'config.json');
 
   let config: any = {};
   try {
     config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-  } catch {
-    // File doesn't exist yet
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+      console.warn(`[succ] Failed to parse config at ${configPath}, using defaults`);
+    }
   }
 
   // Parse value

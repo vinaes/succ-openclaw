@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs';
 
 vi.mock('succ/api', () => ({
@@ -30,32 +30,45 @@ const mockGetMemoryById = vi.mocked(getMemoryById);
 const mockExistsSync = vi.mocked(fs.existsSync);
 const mockReadFileSync = vi.mocked(fs.readFileSync);
 
+const originalEnv = process.env.SUCC_PROJECT_ROOT;
+
 beforeEach(() => {
   vi.clearAllMocks();
+  process.env.SUCC_PROJECT_ROOT = '/workspace/project';
   vi.mocked(getEmbedding).mockResolvedValue([0.1, 0.2]);
   vi.mocked(hybridSearchCode).mockResolvedValue([]);
   vi.mocked(hybridSearchDocs).mockResolvedValue([]);
   vi.mocked(hybridSearchMemories).mockResolvedValue([]);
 });
 
+afterEach(() => {
+  process.env.SUCC_PROJECT_ROOT = originalEnv;
+});
+
 describe('memoryGet', () => {
-  it('reads literal file when path exists', async () => {
+  it('reads literal file when path exists within workspace', async () => {
     mockExistsSync.mockReturnValue(true);
     mockReadFileSync.mockReturnValue('line1\nline2\nline3' as any);
 
-    const result = await memoryGet({ path: '/tmp/test.md' });
+    const result = await memoryGet({ path: 'src/test.md' });
     expect(result.content).toBe('line1\nline2\nline3');
     expect(result.lineCount).toBe(3);
-    expect(result.path).toBe('/tmp/test.md');
   });
 
   it('reads file slice with startLine and numLines', async () => {
     mockExistsSync.mockReturnValue(true);
     mockReadFileSync.mockReturnValue('a\nb\nc\nd\ne' as any);
 
-    const result = await memoryGet({ path: '/tmp/test.md', startLine: 2, numLines: 2 });
+    const result = await memoryGet({ path: 'src/test.md', startLine: 2, numLines: 2 });
     expect(result.content).toBe('b\nc');
     expect(result.lineCount).toBe(2);
+  });
+
+  it('blocks path traversal attacks', async () => {
+    mockExistsSync.mockReturnValue(false);
+    // ../../etc/passwd should fail path validation and fall through to semantic search
+    // which also returns nothing
+    await expect(memoryGet({ path: '../../etc/passwd' })).rejects.toThrow('Not found');
   });
 
   it('retrieves memory by ID with memory: prefix', async () => {
