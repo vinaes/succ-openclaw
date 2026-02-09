@@ -9,17 +9,19 @@ import {
   createProximityLinks,
   detectCommunities,
   updateCentralityCache,
+  exportGraphSilent,
 } from 'succ/api';
 import type { LinkRelation } from 'succ/api';
 import { RELATION_TYPES } from '../types.js';
 
 export const memoryLinkSchema = z.object({
   action: z
-    .enum(['create', 'delete', 'show', 'stats', 'auto', 'enrich', 'proximity', 'communities', 'centrality'])
+    .enum(['create', 'delete', 'show', 'stats', 'auto', 'enrich', 'proximity', 'communities', 'centrality', 'export'])
     .describe(
       'Action: create/delete/show/stats for basic ops; ' +
       'auto = auto-link similar memories; enrich = LLM-classify relations; ' +
-      'proximity = co-occurrence links; communities = detect clusters; centrality = compute scores',
+      'proximity = co-occurrence links; communities = detect clusters; ' +
+      'centrality = compute scores; export = Obsidian graph export',
     ),
   sourceId: z.number().optional().describe('Source memory ID (for create/delete/show)'),
   targetId: z.number().optional().describe('Target memory ID (for create/delete)'),
@@ -34,7 +36,7 @@ export const memoryLinkSchema = z.object({
 type MemoryLinkParams = z.infer<typeof memoryLinkSchema>;
 
 /**
- * Knowledge graph — full 9-action tool matching succ_link.
+ * Knowledge graph — full 10-action tool matching succ_link.
  */
 export async function memoryLink(params: MemoryLinkParams): Promise<any> {
   const { action, sourceId, targetId, relation, threshold } = params;
@@ -90,6 +92,14 @@ export async function memoryLink(params: MemoryLinkParams): Promise<any> {
     case 'centrality': {
       const result = await updateCentralityCache();
       return { message: `Updated centrality scores`, ...result };
+    }
+
+    case 'export': {
+      const result = await exportGraphSilent('obsidian');
+      return {
+        message: `Exported ${result.memoriesExported} memories and ${result.linksExported} links to Obsidian brain vault`,
+        ...result,
+      };
     }
 
     default:
