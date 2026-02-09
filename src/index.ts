@@ -54,6 +54,7 @@ import {
 } from './tools/memory-prd.js';
 import { onBeforeCompact } from './hooks/before-compact.js';
 import { onFileChanged } from './hooks/file-changed.js';
+import { generateSystemPrompt } from './hooks/system-prompt.js';
 import { getWebSearchHistory } from 'succ/api';
 import { DEFAULT_CONFIG, type OpenClawPluginAPI, type SuccPluginConfig } from './types.js';
 
@@ -363,13 +364,21 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
   });
 
   // ========================================================================
-  // 14. Hooks
+  // 14. System prompt injection
+  // ========================================================================
+
+  if (api.prompts?.appendSystem) {
+    api.prompts.appendSystem(generateSystemPrompt());
+  }
+
+  // ========================================================================
+  // 15. Hooks
   // ========================================================================
 
   api.hooks.on('beforeCompact', onBeforeCompact);
   api.hooks.on('fileChanged', onFileChanged);
 
-  // 15. Cleanup on shutdown
+  // 16. Cleanup on shutdown
   api.hooks.on('shutdown', async () => {
     await closeStorageDispatcher();
   });

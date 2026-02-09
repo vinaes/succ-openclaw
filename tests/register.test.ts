@@ -116,12 +116,13 @@ const mockInitProject = vi.mocked(initializeSuccProject);
 
 const originalEnv = process.env.SUCC_PROJECT_ROOT;
 
-function createMockApi(configOverrides: Record<string, any> = {}): OpenClawPluginAPI {
+function createMockApi(configOverrides: Record<string, any> = {}, options?: { withPrompts?: boolean }): OpenClawPluginAPI {
   const replacedTools: Map<string, any> = new Map();
   const registeredTools: Map<string, any> = new Map();
   const hooks: Map<string, any[]> = new Map();
+  const systemPrompts: string[] = [];
 
-  return {
+  const api: any = {
     workspace: {
       getRoot: () => '/workspace/test-project',
     },
@@ -148,7 +149,18 @@ function createMockApi(configOverrides: Record<string, any> = {}): OpenClawPlugi
     _replacedTools: replacedTools,
     _registeredTools: registeredTools,
     _hooks: hooks,
-  } as any;
+    _systemPrompts: systemPrompts,
+  };
+
+  if (options?.withPrompts) {
+    api.prompts = {
+      appendSystem(content: string) {
+        systemPrompts.push(content);
+      },
+    };
+  }
+
+  return api;
 }
 
 beforeEach(() => {
@@ -263,5 +275,25 @@ describe('register()', () => {
     expect(hooks.has('beforeCompact')).toBe(true);
     expect(hooks.has('fileChanged')).toBe(true);
     expect(hooks.has('shutdown')).toBe(true);
+  });
+
+  it('injects system prompt when api.prompts is available', async () => {
+    const api = createMockApi({}, { withPrompts: true });
+    await register(api);
+
+    const prompts = (api as any)._systemPrompts as string[];
+    expect(prompts).toHaveLength(1);
+    expect(prompts[0]).toContain('<succ-memory>');
+    expect(prompts[0]).toContain('memory_search');
+    expect(prompts[0]).toContain('memory_store');
+  });
+
+  it('skips system prompt injection when api.prompts is not available', async () => {
+    const api = createMockApi();
+    // Should not throw when prompts is undefined
+    await register(api);
+
+    const prompts = (api as any)._systemPrompts as string[];
+    expect(prompts).toHaveLength(0);
   });
 });

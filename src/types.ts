@@ -62,6 +62,9 @@ export interface OpenClawPluginAPI {
   hooks: {
     on(event: string, handler: (...args: any[]) => Promise<void> | void): void;
   };
+  prompts?: {
+    appendSystem(content: string): void;
+  };
 }
 
 export interface OpenClawTool {
