@@ -1,0 +1,50 @@
+{
+  "name": "@succ/openclaw-succ",
+  "version": "0.1.0",
+  "description": "OpenClaw plugin — replaces native memory with succ's hybrid search, knowledge graph, and structured memories",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "openclaw.plugin.json"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest"
+  },
+  "keywords": [
+    "openclaw",
+    "plugin",
+    "memory",
+    "succ",
+    "semantic-search",
+    "knowledge-graph",
+    "ai-agent"
+  ],
+  "author": "cpz",
+  "license": "FSL-1.1-Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vinaes/succ-openclaw.git"
+  },
+  "homepage": "https://github.com/Vinaes/succ-openclaw#readme",
+  "bugs": {
+    "url": "https://github.com/Vinaes/succ-openclaw/issues"
+  },
+  "peerDependencies": {
+    "succ": ">=1.1.0"
+  },
+  "dependencies": {
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

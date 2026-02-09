@@ -1,0 +1,64 @@
+{
+  "id": "@succ/openclaw-succ",
+  "name": "succ Memory",
+  "version": "0.1.0",
+  "description": "Replaces OpenClaw native memory with succ — hybrid search (BM25 + semantic), typed memories, knowledge graph, dead-end tracking, temporal queries",
+  "author": "succ team",
+  "openclaw": {
+    "minVersion": "0.1.0"
+  },
+  "capabilities": {
+    "tools": [
+      "memory_search",
+      "memory_get",
+      "memory_store",
+      "memory_link",
+      "memory_dead_end",
+      "memory_explore",
+      "memory_forget",
+      "memory_index"
+    ],
+    "hooks": [
+      "beforeCompact",
+      "shutdown"
+    ],
+    "providers": []
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "autoInit": {
+        "type": "boolean",
+        "default": true,
+        "description": "Auto-initialize .succ/ directory if missing"
+      },
+      "markdownBridge": {
+        "type": "boolean",
+        "default": false,
+        "description": "Bidirectional sync between succ DB and Markdown files"
+      },
+      "embeddingMode": {
+        "type": "string",
+        "enum": ["local", "openrouter", "custom"],
+        "default": "local",
+        "description": "Embedding generation mode"
+      },
+      "maxSearchResults": {
+        "type": "number",
+        "default": 10,
+        "description": "Default max results for memory_search"
+      },
+      "snippetMaxChars": {
+        "type": "number",
+        "default": 700,
+        "description": "Max snippet length in search results"
+      }
+    }
+  },
+  "uiHints": {
+    "autoInit": { "label": "Auto-initialize" },
+    "markdownBridge": { "label": "Markdown Bridge" },
+    "embeddingMode": { "label": "Embedding Mode" }
+  }
+}
