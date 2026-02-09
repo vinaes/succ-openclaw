@@ -39,7 +39,8 @@ export async function memoryIndex(params: MemoryIndexParams): Promise<{ message:
   }
 
   const embedding = await getEmbedding(content);
-  await upsertDocument(filePath, content, embedding);
+  const lineCount = content.split('\n').length;
+  await upsertDocument(filePath, 0, content, 1, lineCount, embedding);
   await setFileHash(filePath, hash);
 
   return { message: `Indexed: ${filePath}`, indexed: true };

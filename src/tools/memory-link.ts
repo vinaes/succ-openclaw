@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { createMemoryLink, deleteMemoryLink, getMemoryWithLinks, getGraphStats } from 'succ/api';
+import type { LinkRelation } from 'succ/api';
 import { RELATION_TYPES } from '../types.js';
 
 export const memoryLinkSchema = z.object({
@@ -31,7 +32,7 @@ export async function memoryLink(params: MemoryLinkParams): Promise<any> {
       if (!sourceId || !targetId) {
         throw new Error('sourceId and targetId required for create');
       }
-      await createMemoryLink(sourceId, targetId, relation || 'related');
+      await createMemoryLink(sourceId, targetId, (relation || 'related') as LinkRelation);
       return { message: `Linked memory ${sourceId} → ${targetId} (${relation})` };
     }
 

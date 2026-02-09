@@ -23,8 +23,9 @@ export async function onFileChanged(event: any): Promise<void> {
 
     const hash = createHash('sha256').update(content).digest('hex');
     const embedding = await getEmbedding(content);
+    const lineCount = content.split('\n').length;
 
-    await upsertDocument(filePath, content, embedding);
+    await upsertDocument(filePath, 0, content, 1, lineCount, embedding);
     await setFileHash(filePath, hash);
   } catch (err) {
     console.error('[succ] file change hook error:', err);

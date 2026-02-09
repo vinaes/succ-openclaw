@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { getRecentMemories, saveMemory, getEmbedding } from 'succ/api';
+import type { MemoryType } from 'succ/api';
 
 /**
  * Markdown bridge — optional bidirectional sync between succ DB and Markdown files.
@@ -84,7 +85,7 @@ export async function importMarkdownToMemory(filePath: string): Promise<boolean>
 
   const embedding = await getEmbedding(content);
   await saveMemory(content, embedding, [...tags, 'openclaw', 'imported'], `markdown:${filePath}`, {
-    type,
+    type: type as MemoryType,
   });
 
   return true;
