@@ -55,8 +55,8 @@ export async function memoryGet(params: MemoryGetParams): Promise<OpenClawGetRes
   }
 
   // Case 3: semantic fallback
-  const results = await memorySearch({ query: filePath, maxResults: 1 });
-  if (results.length === 0) {
+  const results = await memorySearch({ query: filePath, maxResults: 1, scope: 'all', output: 'full' });
+  if (typeof results === 'string' || results.length === 0) {
     throw new Error(`Not found: ${filePath}`);
   }
 

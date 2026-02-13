@@ -215,7 +215,7 @@ describe('register()', () => {
     expect(call).not.toHaveProperty('openrouter_api_key');
   });
 
-  it('registers 28 tools (2 replaced + 26 new)', async () => {
+  it('registers 29 tools (2 replaced + 27 new)', async () => {
     const api = createMockApi();
     await register(api);
 
@@ -226,12 +226,13 @@ describe('register()', () => {
     expect(replaced.has('memory_search')).toBe(true);
     expect(replaced.has('memory_get')).toBe(true);
 
-    expect(registered.size).toBe(26);
+    expect(registered.size).toBe(27);
     // Spot-check a few
     expect(registered.has('memory_store')).toBe(true);
     expect(registered.has('memory_recall')).toBe(true);
     expect(registered.has('memory_link')).toBe(true);
     expect(registered.has('memory_dead_end')).toBe(true);
+    expect(registered.has('memory_symbols')).toBe(true);
     expect(registered.has('memory_quick_search')).toBe(true);
     expect(registered.has('memory_prd_generate')).toBe(true);
     expect(registered.has('memory_checkpoint')).toBe(true);

@@ -3,7 +3,7 @@ import { analyzeFile, indexCodeFile, reindexFiles, getProjectRoot } from 'succ/a
 
 export const memoryAnalyzeSchema = z.object({
   file: z.string().describe('File path to analyze with LLM'),
-  mode: z.enum(['claude', 'local', 'openrouter']).optional().describe('LLM mode for analysis'),
+  mode: z.enum(['claude', 'api']).optional().describe('LLM mode: claude (CLI with Haiku) or api (OpenRouter/Ollama/LM Studio)'),
 });
 
 export const memoryIndexCodeSchema = z.object({

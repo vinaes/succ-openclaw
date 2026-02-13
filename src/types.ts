@@ -15,6 +15,9 @@ export interface OpenClawSearchResult {
   vectorScore: number;
   textScore: number;
   provider: string;
+  symbolType?: string;
+  symbolName?: string;
+  signature?: string;
 }
 
 export interface OpenClawGetResult {
@@ -30,7 +33,7 @@ export interface SuccPluginConfig {
   markdownBridge: boolean;
   embeddingMode: 'local' | 'openrouter' | 'custom';
   storageBackend: 'sqlite' | 'postgresql';
-  analyzeMode: 'claude' | 'openrouter' | 'local';
+  analyzeMode: 'claude' | 'api';
   openrouterApiKey?: string;
   maxSearchResults: number;
   snippetMaxChars: number;

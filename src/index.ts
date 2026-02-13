@@ -41,6 +41,7 @@ import {
   memoryReindexSchema,
 } from './tools/memory-analyze.js';
 import { memoryDebug, memoryDebugSchema } from './tools/memory-debug.js';
+import { memorySymbols, memorySymbolsSchema } from './tools/memory-symbols.js';
 import {
   memoryPrdGenerate,
   memoryPrdGenerateSchema,
@@ -113,7 +114,8 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
     name: 'memory_search',
     description:
       'Search across code, documentation, and memories using hybrid search (BM25 + semantic). ' +
-      'Powered by succ — returns results from source code, brain vault docs, and structured memories.',
+      'Supports scope filtering (code/docs/memories), regex post-filter, symbol_type filter (function/method/class/interface/type_alias), ' +
+      'and output modes: full (snippets), lean (file+lines), signatures (code symbols only).',
     schema: memorySearchSchema.shape as Record<string, unknown>,
     execute: (params: any) => memorySearch(params, config.snippetMaxChars),
   });
@@ -210,7 +212,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
     name: 'memory_analyze',
     description:
       'Analyze a source file with LLM and generate documentation in brain vault. ' +
-      'Modes: claude (CLI with Haiku), local (Ollama/LM Studio), openrouter (cloud API).',
+      'Modes: claude (CLI with Haiku), api (OpenRouter/Ollama/LM Studio).',
     schema: memoryAnalyzeSchema.shape as Record<string, unknown>,
     execute: memoryAnalyze,
   });
@@ -221,6 +223,15 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
       'Detect stale (modified) and deleted files in the index, then re-index stale files and clean up deleted entries.',
     schema: memoryReindexSchema.shape as Record<string, unknown>,
     execute: memoryReindex,
+  });
+
+  api.tools.register('memory_symbols', {
+    name: 'memory_symbols',
+    description:
+      'Extract functions, classes, interfaces, and type definitions from a source file using tree-sitter AST parsing. ' +
+      'Returns symbol names, types, signatures, and line numbers. Supports 13 languages.',
+    schema: memorySymbolsSchema.shape as Record<string, unknown>,
+    execute: memorySymbols,
   });
 
   // ========================================================================
@@ -398,7 +409,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
     await closeStorageDispatcher();
   });
 
-  console.log(`[succ] Plugin loaded — 28 tools registered (${isSuccInitialized(workspaceRoot) ? 'project initialized' : 'global-only mode'})`);
+  console.log(`[succ] Plugin loaded — 29 tools registered (${isSuccInitialized(workspaceRoot) ? 'project initialized' : 'global-only mode'})`);
 }
 
 // Re-export for programmatic use
@@ -415,6 +426,7 @@ export { memoryQuickSearch, memoryWebSearch, memoryDeepResearch } from './tools/
 export { memoryStatus, memoryStats, memoryScore, memoryConfig, memoryConfigSet } from './tools/memory-status.js';
 export { memoryCheckpoint } from './tools/memory-checkpoint.js';
 export { memoryAnalyze, memoryIndexCode, memoryReindex } from './tools/memory-analyze.js';
+export { memorySymbols } from './tools/memory-symbols.js';
 export { memoryDebug } from './tools/memory-debug.js';
 export { memoryPrdGenerate, memoryPrdList, memoryPrdStatus, memoryPrdRun, memoryPrdExport } from './tools/memory-prd.js';
 export { exportMemoriesToMarkdown, importMarkdownToMemory } from './bridge/markdown-bridge.js';
