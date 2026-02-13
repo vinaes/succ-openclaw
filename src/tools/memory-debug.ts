@@ -10,7 +10,6 @@ import {
   loadSessionLog,
   detectLanguage,
   generateLogStatement,
-  sessionToIndexEntry,
 } from 'succ/api';
 import type { DebugSession, Hypothesis, DebugLanguage } from 'succ/api';
 
