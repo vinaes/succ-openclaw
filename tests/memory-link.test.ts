@@ -10,6 +10,8 @@ vi.mock('@vinaes/succ/api', () => ({
   createProximityLinks: vi.fn(),
   detectCommunities: vi.fn(),
   updateCentralityCache: vi.fn(),
+  exportGraphSilent: vi.fn(),
+  graphCleanup: vi.fn(),
 }));
 
 import { memoryLink } from '../src/tools/memory-link.js';
@@ -73,7 +75,7 @@ describe('memoryLink', () => {
     const stats = { totalLinks: 42, totalMemories: 100 };
     mockStats.mockResolvedValue(stats as any);
 
-    const result = await memoryLink({ action: 'stats', relation: 'related' });
+    const result = await memoryLink({ action: 'graph', relation: 'related' });
     expect(result).toEqual(stats);
   });
 
@@ -116,5 +118,18 @@ describe('memoryLink', () => {
     const result = await memoryLink({ action: 'centrality', relation: 'related' });
     expect(result.message).toContain('centrality');
     expect(result.updated).toBe(20);
+  });
+
+  it('runs graph cleanup', async () => {
+    const { graphCleanup } = await import('@vinaes/succ/api');
+    const mockCleanup = vi.mocked(graphCleanup);
+    mockCleanup.mockResolvedValue({
+      pruned: 5, enriched: 3, orphansConnected: 2, communitiesDetected: 4, centralityUpdated: 10,
+    } as any);
+
+    const result = await memoryLink({ action: 'cleanup', relation: 'related', threshold: 0.6 });
+    expect(result.message).toContain('cleanup');
+    expect(result.pruned).toBe(5);
+    expect(mockCleanup).toHaveBeenCalledWith({ pruneThreshold: 0.6 });
   });
 });

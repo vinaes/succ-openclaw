@@ -202,25 +202,19 @@ describe('register()', () => {
 
     // Check default overrides
     expect(mockSetConfigOverride).toHaveBeenCalledWith({
-      embedding_mode: 'local',
       storage: { backend: 'sqlite' },
-      analyze_mode: 'claude',
     });
   });
 
   it('passes custom config from openclaw.json to setConfigOverride', async () => {
     const api = createMockApi({
-      embeddingMode: 'openrouter',
       storageBackend: 'postgresql',
-      analyzeMode: 'local',
       openrouterApiKey: 'sk-or-test-key',
     });
     await register(api);
 
     expect(mockSetConfigOverride).toHaveBeenCalledWith({
-      embedding_mode: 'openrouter',
       storage: { backend: 'postgresql' },
-      analyze_mode: 'local',
       openrouter_api_key: 'sk-or-test-key',
     });
   });

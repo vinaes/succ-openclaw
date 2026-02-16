@@ -47,7 +47,7 @@ export async function memoryGet(params: MemoryGetParams): Promise<OpenClawGetRes
     if (!memory) {
       throw new Error(`Memory ${id} not found`);
     }
-    incrementMemoryAccess(id).catch(() => {});
+    incrementMemoryAccess(id).catch((e) => console.warn('[succ] incrementMemoryAccess failed:', (e as Error).message));
     return {
       content: memory.content,
       path: `memory:${id}`,

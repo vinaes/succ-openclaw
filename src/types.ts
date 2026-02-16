@@ -31,9 +31,7 @@ export interface OpenClawGetResult {
 export interface SuccPluginConfig {
   autoInit: boolean;
   markdownBridge: boolean;
-  embeddingMode: 'local' | 'openrouter' | 'custom';
   storageBackend: 'sqlite' | 'postgresql';
-  analyzeMode: 'claude' | 'api';
   openrouterApiKey?: string;
   maxSearchResults: number;
   snippetMaxChars: number;
@@ -42,9 +40,7 @@ export interface SuccPluginConfig {
 export const DEFAULT_CONFIG: SuccPluginConfig = {
   autoInit: true,
   markdownBridge: false,
-  embeddingMode: 'local',
   storageBackend: 'sqlite',
-  analyzeMode: 'claude',
   maxSearchResults: 10,
   snippetMaxChars: 700,
 };

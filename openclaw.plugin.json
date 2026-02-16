@@ -59,23 +59,11 @@
       "default": false,
       "description": "Enable bidirectional sync between succ DB and .succ/brain/ Markdown files."
     },
-    "embeddingMode": {
-      "type": "string",
-      "enum": ["local", "openrouter", "custom"],
-      "default": "local",
-      "description": "Embedding model backend. 'local' uses Transformers.js (no API key needed)."
-    },
     "storageBackend": {
       "type": "string",
       "enum": ["sqlite", "postgresql"],
       "default": "sqlite",
       "description": "Database backend. SQLite for local-first, PostgreSQL for team/cloud."
-    },
-    "analyzeMode": {
-      "type": "string",
-      "enum": ["claude", "openrouter", "local"],
-      "default": "claude",
-      "description": "LLM backend for file analysis. 'claude' uses Claude CLI, 'local' uses Ollama."
     },
     "openrouterApiKey": {
       "type": "string",

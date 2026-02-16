@@ -81,9 +81,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
   const config: SuccPluginConfig = {
     autoInit: api.config.get('autoInit', DEFAULT_CONFIG.autoInit),
     markdownBridge: api.config.get('markdownBridge', DEFAULT_CONFIG.markdownBridge),
-    embeddingMode: api.config.get('embeddingMode', DEFAULT_CONFIG.embeddingMode),
     storageBackend: api.config.get('storageBackend', DEFAULT_CONFIG.storageBackend),
-    analyzeMode: api.config.get('analyzeMode', DEFAULT_CONFIG.analyzeMode),
     openrouterApiKey: api.config.get('openrouterApiKey', DEFAULT_CONFIG.openrouterApiKey),
     maxSearchResults: api.config.get('maxSearchResults', DEFAULT_CONFIG.maxSearchResults),
     snippetMaxChars: api.config.get('snippetMaxChars', DEFAULT_CONFIG.snippetMaxChars),
@@ -104,9 +102,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
 
   // 4. Apply plugin config overrides to succ core
   const succOverrides: Record<string, unknown> = {
-    embedding_mode: config.embeddingMode,
     storage: { backend: config.storageBackend },
-    analyze_mode: config.analyzeMode,
   };
   if (config.openrouterApiKey) {
     succOverrides.openrouter_api_key = config.openrouterApiKey;

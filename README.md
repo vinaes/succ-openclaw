@@ -134,14 +134,12 @@ Restart OpenClaw. The plugin will:
 |--------|---------|-------------|
 | `autoInit` | `true` | Auto-create `.succ/` if missing |
 | `markdownBridge` | `false` | Bidirectional sync: succ DB ↔ Markdown files |
-| `embeddingMode` | `"local"` | `local` (Transformers.js), `openrouter` (cloud), `custom` (Ollama) |
 | `storageBackend` | `"sqlite"` | `sqlite` (local) or `postgresql` |
-| `analyzeMode` | `"claude"` | LLM for `memory_analyze`: `claude`, `openrouter`, `local` |
 | `openrouterApiKey` | — | OpenRouter API key |
 | `maxSearchResults` | `10` | Default max results for memory_search |
 | `snippetMaxChars` | `700` | Max snippet length in search results |
 
-These are **convenience shortcuts** — they override the equivalent settings in `.succ/config.json`. For fine-grained control, edit `.succ/config.json` directly.
+These are **convenience shortcuts** — they override the equivalent settings in `.succ/config.json`. For fine-grained control (embedding mode, analyze mode, quality scoring, etc.), use `memory_config_set` or edit `.succ/config.json` directly.
 
 <details>
 <summary>Full config example</summary>
@@ -152,9 +150,7 @@ These are **convenience shortcuts** — they override the equivalent settings in
     "entries": {
       "@succ/openclaw-succ": {
         "autoInit": true,
-        "embeddingMode": "local",
         "storageBackend": "sqlite",
-        "analyzeMode": "claude",
         "maxSearchResults": 10,
         "snippetMaxChars": 700
       }

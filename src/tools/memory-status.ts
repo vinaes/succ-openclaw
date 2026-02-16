@@ -37,8 +37,8 @@ export async function memoryStatus(): Promise<any> {
   try {
     docStats = await getStats();
     memStats = await getMemoryStats();
-  } catch {
-    // DB might not be ready
+  } catch (e) {
+    console.warn('[succ] Stats query failed (DB may not be ready):', (e as Error).message);
   }
 
   return {
@@ -57,7 +57,8 @@ export async function memoryStats(): Promise<any> {
     const aggregated = await getTokenStatsAggregated();
     const summary = await getTokenStatsSummary();
     return { aggregated, summary };
-  } catch {
+  } catch (e) {
+    console.warn('[succ] Token stats query failed:', (e as Error).message);
     return { aggregated: [], summary: null };
   }
 }

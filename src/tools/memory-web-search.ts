@@ -64,7 +64,7 @@ async function doSearch(
     citations_count: 0,
     has_reasoning: false,
     response_length_chars: answer.length,
-  }).catch(() => {});
+  }).catch((e) => console.warn('[succ] recordWebSearch failed:', (e as Error).message));
 
   if (saveToMemory) {
     try {
@@ -117,7 +117,7 @@ export async function memoryDeepResearch(params: DeepResearchParams): Promise<{ 
     citations_count: 0,
     has_reasoning: !!reasoning,
     response_length_chars: answer.length,
-  }).catch(() => {});
+  }).catch((e) => console.warn('[succ] recordWebSearch failed:', (e as Error).message));
 
   if (params.save_to_memory) {
     try {

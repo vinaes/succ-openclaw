@@ -70,7 +70,7 @@ export async function memoryRecall(params: MemoryRecallParams): Promise<any[]> {
   // Track access for retention scoring
   for (const r of sorted) {
     if (r.id && !r.is_global) {
-      incrementMemoryAccess(r.id).catch(() => {});
+      incrementMemoryAccess(r.id).catch((e) => console.warn('[succ] incrementMemoryAccess failed:', (e as Error).message));
     }
   }
 

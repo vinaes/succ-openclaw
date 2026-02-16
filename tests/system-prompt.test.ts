@@ -55,6 +55,7 @@ describe('generateSystemPrompt', () => {
   it('includes all tool categories', () => {
     expect(prompt).toContain('Search');
     expect(prompt).toContain('Store & Recall');
+    expect(prompt).toContain('Dynamic Hook Rules');
     expect(prompt).toContain('Knowledge Graph');
     expect(prompt).toContain('Indexing & Analysis');
     expect(prompt).toContain('Web Fetch & Search');
@@ -79,9 +80,30 @@ describe('generateSystemPrompt', () => {
     expect(prompt).toContain('dead_end');
   });
 
-  it('is compact (under 2000 tokens estimate)', () => {
+  it('documents memory_store new parameters', () => {
+    expect(prompt).toContain('files');
+    expect(prompt).toContain('extract');
+    expect(prompt).toContain('global');
+    expect(prompt).toContain('valid_from');
+    expect(prompt).toContain('valid_until');
+    expect(prompt).toContain('file:{basename}');
+  });
+
+  it('documents hook-rule convention', () => {
+    expect(prompt).toContain('hook-rule');
+    expect(prompt).toContain('tool:{Name}');
+    expect(prompt).toContain('match:{regex}');
+    expect(prompt).toContain('deny tool call');
+    expect(prompt).toContain('ask user confirmation');
+  });
+
+  it('documents cleanup action in memory_link', () => {
+    expect(prompt).toContain('cleanup');
+  });
+
+  it('is compact (under 2500 tokens estimate)', () => {
     // Rough estimate: ~4 chars per token
     const estimatedTokens = prompt.length / 4;
-    expect(estimatedTokens).toBeLessThan(2000);
+    expect(estimatedTokens).toBeLessThan(2500);
   });
 });
