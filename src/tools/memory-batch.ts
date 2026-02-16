@@ -35,6 +35,12 @@ export async function memoryBatchStore(
   const contents = params.memories.map((m) => m.content);
   const embeddings = await getEmbeddings(contents);
 
+  if (embeddings.length !== contents.length) {
+    throw new Error(
+      `Embedding count mismatch: got ${embeddings.length}, expected ${contents.length}`,
+    );
+  }
+
   const batch = params.memories.map((m, i) => ({
     content: m.content,
     embedding: embeddings[i],

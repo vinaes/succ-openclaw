@@ -9,7 +9,7 @@ describe('generateSystemPrompt', () => {
     expect(prompt).toMatch(/<\/succ-memory>$/);
   });
 
-  it('documents all 34 tools', () => {
+  it('documents all 35 tools', () => {
     const tools = [
       'memory_search',
       'memory_get',
@@ -40,6 +40,7 @@ describe('generateSystemPrompt', () => {
       'memory_config_set',
       'memory_checkpoint',
       'memory_retention',
+      'memory_debug',
       'memory_prd_generate',
       'memory_prd_list',
       'memory_prd_status',
