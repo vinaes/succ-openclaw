@@ -93,7 +93,7 @@ export async function memoryBatchStore(
 
   return {
     saved,
-    message: `Saved ${saved}/${params.memories.length} memories (${skipped} duplicates skipped)`,
+    message: `Saved ${saved}/${filtered.length} memories${params.memories.length !== filtered.length ? ` (${params.memories.length - filtered.length} blocked)` : ''} (${skipped} duplicates skipped)`,
   };
 }
 

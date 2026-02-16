@@ -105,6 +105,25 @@ describe('memoryBatchStore', () => {
     expect(batch[0].tags).toContain('openclaw');
   });
 
+  it('shows blocked count when some items are sensitive', async () => {
+    // First call: sensitive, second call: clean
+    mockScanSensitive
+      .mockReturnValueOnce({ hasSensitive: true, matches: [{ type: 'api_key', value: 'sk-x', start: 0, end: 4 }], redactedText: '', originalText: '' } as any)
+      .mockReturnValueOnce({ hasSensitive: false, matches: [], redactedText: '', originalText: '' } as any);
+    mockGetEmbeddings.mockResolvedValue([[0.1]]);
+    mockSaveBatch.mockResolvedValue({ saved: 1, skipped: 0, results: [{ index: 0, isDuplicate: false, id: 1, reason: 'saved' }] } as any);
+
+    const result = await memoryBatchStore({
+      memories: [
+        { content: 'sk-secret', type: 'observation', tags: [], source: 'openclaw' },
+        { content: 'clean note', type: 'observation', tags: [], source: 'openclaw' },
+      ],
+    });
+
+    expect(result.saved).toBe(1);
+    expect(result.message).toContain('1 blocked');
+  });
+
   it('blocks sensitive content in batch items', async () => {
     mockScanSensitive.mockReturnValue({
       hasSensitive: true,

@@ -129,6 +129,48 @@ describe('memoryStore — global save', () => {
   });
 });
 
+describe('memoryStore — global + temporal warning', () => {
+  it('warns when global=true with valid_until', async () => {
+    const futureDate = new Date('2025-12-31');
+    mockParseDuration.mockReturnValue(futureDate);
+
+    const result = await memoryStore({
+      content: 'Temp cross-project rule',
+      type: 'decision',
+      tags: [],
+      source: 'openclaw',
+      global: true,
+      valid_until: '30d',
+    });
+
+    expect(result.message).toContain('Warning');
+    expect(result.message).toContain('not supported for global');
+    expect(mockSaveGlobalMemory).toHaveBeenCalled();
+  });
+});
+
+describe('memoryStore — extraction opt-in', () => {
+  it('does NOT extract when config has remember_extract_default undefined', async () => {
+    mockGetConfig.mockReturnValue({ quality_scoring_enabled: false } as any);
+
+    await memoryStore({ content: 'hello', type: 'observation', tags: [], source: 'openclaw' });
+
+    expect(mockExtractFacts).not.toHaveBeenCalled();
+    expect(mockSaveMemory).toHaveBeenCalled();
+  });
+
+  it('extracts when config has remember_extract_default=true', async () => {
+    mockGetConfig.mockReturnValue({ remember_extract_default: true, quality_scoring_enabled: false } as any);
+    mockExtractFacts.mockResolvedValue([
+      { content: 'Fact', type: 'observation', confidence: 0.9, tags: [] },
+    ]);
+
+    await memoryStore({ content: 'hello', type: 'observation', tags: [], source: 'openclaw' });
+
+    expect(mockExtractFacts).toHaveBeenCalled();
+  });
+});
+
 describe('memoryStore — valid_from / valid_until', () => {
   it('passes parsed dates to saveMemory', async () => {
     const futureDate = new Date('2025-12-31');

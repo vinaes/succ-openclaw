@@ -69,14 +69,16 @@ export async function memoryStore(
   if (valid_from) {
     try {
       validFromDate = parseDuration(valid_from);
-    } catch {
+    } catch (e) {
+      console.warn('[succ] Invalid valid_from format:', valid_from, (e as Error).message);
       return { message: `Invalid valid_from format: ${valid_from}. Use ISO date or duration (7d, 2w, 1m).` };
     }
   }
   if (valid_until) {
     try {
       validUntilDate = parseDuration(valid_until);
-    } catch {
+    } catch (e) {
+      console.warn('[succ] Invalid valid_until format:', valid_until, (e as Error).message);
       return { message: `Invalid valid_until format: ${valid_until}. Use ISO date or duration (7d, 30d).` };
     }
   }
@@ -89,7 +91,7 @@ export async function memoryStore(
 
   // Determine extraction mode
   const config = getConfig();
-  const configDefault = config.remember_extract_default !== false;
+  const configDefault = config.remember_extract_default === true;
   const useExtract = extract ?? configDefault;
 
   if (useExtract) {
@@ -113,9 +115,12 @@ async function storeDirect(
 
   if (useGlobal) {
     const result = await saveGlobalMemory(content, embedding, tags, source, { type });
+    const warning = (validFrom || validUntil)
+      ? ' Warning: valid_from/valid_until are not supported for global memories and were ignored.'
+      : '';
     return {
       id: result.id,
-      message: `Saved global ${type} memory (tags: ${tags.join(', ')})`,
+      message: `Saved global ${type} memory (tags: ${tags.join(', ')})${warning}`,
     };
   }
 
@@ -164,7 +169,7 @@ async function storeWithExtraction(
 
   // Score and filter facts, then save
   const config = getConfig();
-  const qualityEnabled = config.quality_scoring_enabled !== false;
+  const qualityEnabled = config.quality_scoring_enabled === true;
   const prepared: Array<{ content: string; embedding: number[]; tags: string[]; type: MemoryType; qualityScore?: { score: number; factors: Record<string, number> } }> = [];
 
   for (const fact of facts) {
@@ -215,7 +220,8 @@ async function storeWithExtraction(
       const result = await saveGlobalMemory(item.content, item.embedding, item.tags, source, { type: item.type });
       ids.push(result.id);
     }
-    return { ids, message: `Extracted ${ids.length} facts, saved to global memory.` };
+    const warning = (validFrom || validUntil) ? ' (valid_from/valid_until ignored for global memories)' : '';
+    return { ids, message: `Extracted ${ids.length} facts, saved to global memory.${warning}` };
   }
 
   const batchInputs = prepared.map((item) => ({
