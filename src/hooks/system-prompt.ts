@@ -9,7 +9,7 @@
 /**
  * Generate the system prompt section for succ memory tools.
  *
- * Designed to be compact (~1300 tokens) while covering all 28 tools with
+ * Designed to be compact (~1500 tokens) while covering all 35 tools with
  * usage patterns that help the agent make good tool choices.
  */
 export function generateSystemPrompt(): string {
@@ -27,6 +27,9 @@ You have access to an advanced memory system powered by succ. Use these tools fo
 - **memory_recall(query, tags?, since?, as_of_date?)** — Semantic recall with filtering. Use for "how did we solve X?" queries.
 - **memory_forget(id?, tag?, older_than?)** — Delete memories by ID, tag, or age.
 - **memory_dead_end(approach, why_failed)** — Record failed approaches. Auto-boosted 15% in search results to prevent retrying.
+- **memory_similar(content, threshold?)** — Check if similar content already exists. Use before memory_store to prevent duplicates.
+- **memory_batch_store(memories[])** — Save multiple memories at once. More efficient than repeated memory_store calls.
+- **memory_batch_delete(ids[])** — Delete multiple memories by IDs in one call.
 
 ## Knowledge Graph
 
@@ -39,8 +42,12 @@ You have access to an advanced memory system powered by succ. Use these tools fo
 - **memory_index_code(file, force?)** — Index a source code file.
 - **memory_analyze(file, mode?)** — LLM-powered file analysis, generates docs in brain vault.
 - **memory_reindex()** — Detect stale/deleted files, re-index automatically.
+- **memory_stale()** — Check index freshness without re-indexing. Shows stale and deleted files.
+- **memory_symbols(file, type?)** — Extract AST symbols (functions, classes, interfaces) via tree-sitter.
 
-## Web Search
+## Web Fetch & Search
+
+- **memory_fetch(url, mode?)** — Fetch a web page as clean markdown. mode=fit reduces tokens 30-50%.
 
 - **memory_quick_search(query)** — Fast web search (Perplexity Sonar). Best for version numbers, quick facts.
 - **memory_web_search(query)** — Quality web search (Perplexity Sonar Pro). For complex queries.
@@ -54,9 +61,10 @@ You have access to an advanced memory system powered by succ. Use these tools fo
 - **memory_score()** — AI-readiness score for the project.
 - **memory_config()** / **memory_config_set(key, value, scope?)** — View/update configuration.
 
-## Checkpoints
+## Checkpoints & Maintenance
 
 - **memory_checkpoint(action)** — Create or list backups of memories and brain vault.
+- **memory_retention()** — Analyze memory retention: decaying memories, access frequency, cleanup suggestions.
 
 ## Debug Sessions
 
@@ -76,5 +84,8 @@ You have access to an advanced memory system powered by succ. Use these tools fo
 - Use **memory_dead_end** when an approach fails — prevents wasting time retrying.
 - Use **memory_link** to connect related decisions, implementations, and patterns.
 - Prefer **memory_search** over file reads when you need to find something but don't know where it is.
+- Use **memory_similar** before **memory_store** to avoid saving duplicate content.
+- Use **memory_batch_store** when saving 3+ memories at once (e.g., session-end summaries).
+- Use **memory_fetch** to read web pages — cleaner than raw HTTP and optimized for LLM consumption.
 </succ-memory>`;
 }

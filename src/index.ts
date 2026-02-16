@@ -9,7 +9,7 @@ import { memoryDeadEnd, memoryDeadEndSchema } from './tools/memory-dead-end.js';
 import { memoryExplore, memoryExploreSchema } from './tools/memory-explore.js';
 import { memoryForget, memoryForgetSchema } from './tools/memory-forget.js';
 import { memoryIndex, memoryIndexSchema } from './tools/memory-index.js';
-import { memoryRecall, memoryRecallSchema } from './tools/memory-recall.js';
+import { memoryRecall, memoryRecallSchema, memorySimilar, memorySimilarSchema } from './tools/memory-recall.js';
 import {
   memoryQuickSearch,
   memoryQuickSearchSchema,
@@ -39,6 +39,8 @@ import {
   memoryIndexCodeSchema,
   memoryReindex,
   memoryReindexSchema,
+  memoryStale,
+  memoryStaleSchema,
 } from './tools/memory-analyze.js';
 import { memoryDebug, memoryDebugSchema } from './tools/memory-debug.js';
 import { memorySymbols, memorySymbolsSchema } from './tools/memory-symbols.js';
@@ -54,6 +56,14 @@ import {
   memoryPrdExport,
   memoryPrdExportSchema,
 } from './tools/memory-prd.js';
+import {
+  memoryBatchStore,
+  memoryBatchStoreSchema,
+  memoryBatchDelete,
+  memoryBatchDeleteSchema,
+} from './tools/memory-batch.js';
+import { memoryFetch, memoryFetchSchema } from './tools/memory-fetch.js';
+import { memoryRetention, memoryRetentionSchema } from './tools/memory-retention.js';
 import { onBeforeCompact } from './hooks/before-compact.js';
 import { onFileChanged } from './hooks/file-changed.js';
 import { generateSystemPrompt } from './hooks/system-prompt.js';
@@ -166,6 +176,31 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
     execute: memoryDeadEnd,
   });
 
+  api.tools.register('memory_similar', {
+    name: 'memory_similar',
+    description:
+      'Check if similar content already exists in memory before storing. ' +
+      'Prevents memory bloat by finding duplicates above a similarity threshold.',
+    schema: memorySimilarSchema.shape as Record<string, unknown>,
+    execute: memorySimilar,
+  });
+
+  api.tools.register('memory_batch_store', {
+    name: 'memory_batch_store',
+    description:
+      'Save multiple memories in one call. More efficient than repeated memory_store calls. ' +
+      'Automatically deduplicates and embeds all content.',
+    schema: memoryBatchStoreSchema.shape as Record<string, unknown>,
+    execute: memoryBatchStore,
+  });
+
+  api.tools.register('memory_batch_delete', {
+    name: 'memory_batch_delete',
+    description: 'Delete multiple memories by IDs in one call.',
+    schema: memoryBatchDeleteSchema.shape as Record<string, unknown>,
+    execute: memoryBatchDelete,
+  });
+
   // ========================================================================
   // 8. Knowledge graph
   // ========================================================================
@@ -225,6 +260,15 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
     execute: memoryReindex,
   });
 
+  api.tools.register('memory_stale', {
+    name: 'memory_stale',
+    description:
+      'Check index freshness — find stale (modified) and deleted files without running full reindex. ' +
+      'Use before memory_reindex to see what would change.',
+    schema: memoryStaleSchema.shape as Record<string, unknown>,
+    execute: memoryStale,
+  });
+
   api.tools.register('memory_symbols', {
     name: 'memory_symbols',
     description:
@@ -279,6 +323,19 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
         limit: params.limit,
       });
     },
+  });
+
+  // ========================================================================
+  // 10b. Web fetch
+  // ========================================================================
+
+  api.tools.register('memory_fetch', {
+    name: 'memory_fetch',
+    description:
+      'Fetch a web page and convert to clean markdown. Uses Readability for content extraction ' +
+      'and Playwright fallback for JS-heavy pages. mode=fit reduces tokens by 30-50%.',
+    schema: memoryFetchSchema.shape as Record<string, unknown>,
+    execute: memoryFetch,
   });
 
   // ========================================================================
@@ -390,7 +447,19 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
   });
 
   // ========================================================================
-  // 15. System prompt injection
+  // 15. Retention analysis
+  // ========================================================================
+
+  api.tools.register('memory_retention', {
+    name: 'memory_retention',
+    description:
+      'Analyze memory retention — shows decaying memories, access frequency, and cleanup suggestions.',
+    schema: memoryRetentionSchema.shape as Record<string, unknown>,
+    execute: memoryRetention,
+  });
+
+  // ========================================================================
+  // 16. System prompt injection
   // ========================================================================
 
   if (api.prompts?.appendSystem) {
@@ -409,7 +478,7 @@ export default async function register(api: OpenClawPluginAPI): Promise<void> {
     await closeStorageDispatcher();
   });
 
-  console.log(`[succ] Plugin loaded — 29 tools registered (${isSuccInitialized(workspaceRoot) ? 'project initialized' : 'global-only mode'})`);
+  console.log(`[succ] Plugin loaded — 35 tools registered (${isSuccInitialized(workspaceRoot) ? 'project initialized' : 'global-only mode'})`);
 }
 
 // Re-export for programmatic use
@@ -421,11 +490,14 @@ export { memoryDeadEnd } from './tools/memory-dead-end.js';
 export { memoryExplore } from './tools/memory-explore.js';
 export { memoryForget } from './tools/memory-forget.js';
 export { memoryIndex } from './tools/memory-index.js';
-export { memoryRecall } from './tools/memory-recall.js';
+export { memoryRecall, memorySimilar } from './tools/memory-recall.js';
 export { memoryQuickSearch, memoryWebSearch, memoryDeepResearch } from './tools/memory-web-search.js';
 export { memoryStatus, memoryStats, memoryScore, memoryConfig, memoryConfigSet } from './tools/memory-status.js';
 export { memoryCheckpoint } from './tools/memory-checkpoint.js';
-export { memoryAnalyze, memoryIndexCode, memoryReindex } from './tools/memory-analyze.js';
+export { memoryAnalyze, memoryIndexCode, memoryReindex, memoryStale } from './tools/memory-analyze.js';
+export { memoryBatchStore, memoryBatchDelete } from './tools/memory-batch.js';
+export { memoryFetch } from './tools/memory-fetch.js';
+export { memoryRetention } from './tools/memory-retention.js';
 export { memorySymbols } from './tools/memory-symbols.js';
 export { memoryDebug } from './tools/memory-debug.js';
 export { memoryPrdGenerate, memoryPrdList, memoryPrdStatus, memoryPrdRun, memoryPrdExport } from './tools/memory-prd.js';

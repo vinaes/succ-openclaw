@@ -51,6 +51,8 @@ vi.mock('../src/tools/memory-index.js', () => ({
 vi.mock('../src/tools/memory-recall.js', () => ({
   memoryRecall: vi.fn(),
   memoryRecallSchema: { shape: {} },
+  memorySimilar: vi.fn(),
+  memorySimilarSchema: { shape: {} },
 }));
 vi.mock('../src/tools/memory-web-search.js', () => ({
   memoryQuickSearch: vi.fn(),
@@ -84,6 +86,8 @@ vi.mock('../src/tools/memory-analyze.js', () => ({
   memoryIndexCodeSchema: { shape: {} },
   memoryReindex: vi.fn(),
   memoryReindexSchema: { shape: {} },
+  memoryStale: vi.fn(),
+  memoryStaleSchema: { shape: {} },
 }));
 vi.mock('../src/tools/memory-prd.js', () => ({
   memoryPrdGenerate: vi.fn(),
@@ -96,6 +100,20 @@ vi.mock('../src/tools/memory-prd.js', () => ({
   memoryPrdRunSchema: { shape: {} },
   memoryPrdExport: vi.fn(),
   memoryPrdExportSchema: { shape: {} },
+}));
+vi.mock('../src/tools/memory-batch.js', () => ({
+  memoryBatchStore: vi.fn(),
+  memoryBatchStoreSchema: { shape: {} },
+  memoryBatchDelete: vi.fn(),
+  memoryBatchDeleteSchema: { shape: {} },
+}));
+vi.mock('../src/tools/memory-fetch.js', () => ({
+  memoryFetch: vi.fn(),
+  memoryFetchSchema: { shape: {} },
+}));
+vi.mock('../src/tools/memory-retention.js', () => ({
+  memoryRetention: vi.fn(),
+  memoryRetentionSchema: { shape: {} },
 }));
 vi.mock('../src/hooks/before-compact.js', () => ({
   onBeforeCompact: vi.fn(),
@@ -215,7 +233,7 @@ describe('register()', () => {
     expect(call).not.toHaveProperty('openrouter_api_key');
   });
 
-  it('registers 29 tools (2 replaced + 27 new)', async () => {
+  it('registers 35 tools (2 replaced + 33 new)', async () => {
     const api = createMockApi();
     await register(api);
 
@@ -226,7 +244,7 @@ describe('register()', () => {
     expect(replaced.has('memory_search')).toBe(true);
     expect(replaced.has('memory_get')).toBe(true);
 
-    expect(registered.size).toBe(27);
+    expect(registered.size).toBe(33);
     // Spot-check a few
     expect(registered.has('memory_store')).toBe(true);
     expect(registered.has('memory_recall')).toBe(true);

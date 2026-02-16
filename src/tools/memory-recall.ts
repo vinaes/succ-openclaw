@@ -5,6 +5,8 @@ import {
   getEmbedding,
   getRecentMemories,
   getRecentGlobalMemories,
+  findSimilarMemory,
+  findSimilarGlobalMemory,
 } from 'succ/api';
 
 export const memoryRecallSchema = z.object({
@@ -75,6 +77,47 @@ export async function memoryRecall(params: MemoryRecallParams): Promise<any[]> {
       valid_until: r.valid_until,
       is_global: !!r.is_global,
     }));
+}
+
+export const memorySimilarSchema = z.object({
+  content: z.string().describe('Content to check for duplicates'),
+  threshold: z
+    .number()
+    .optional()
+    .default(0.85)
+    .describe('Similarity threshold (0-1, default 0.85)'),
+  global: z
+    .boolean()
+    .optional()
+    .default(false)
+    .describe('Check global memories instead of project-local'),
+});
+
+type MemorySimilarParams = z.infer<typeof memorySimilarSchema>;
+
+/**
+ * Find similar/duplicate memories before storing.
+ * Prevents memory bloat by checking if content already exists.
+ */
+export async function memorySimilar(
+  params: MemorySimilarParams,
+): Promise<{ found: boolean; match?: { id: number; content: string; similarity: number } }> {
+  const embedding = await getEmbedding(params.content);
+  const searchFn = params.global ? findSimilarGlobalMemory : findSimilarMemory;
+  const match = await searchFn(embedding, params.threshold);
+
+  if (match) {
+    return {
+      found: true,
+      match: {
+        id: (match as any).id,
+        content: (match as any).content,
+        similarity: (match as any).similarity ?? params.threshold,
+      },
+    };
+  }
+
+  return { found: false };
 }
 
 function parseSince(since: string): Date {

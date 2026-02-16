@@ -1,30 +1,77 @@
-# @succ/openclaw-succ
+<p align="center">
+  <img src="https://img.shields.io/badge/●%20succ-openclaw%20plugin-3fb950?style=for-the-badge&labelColor=0d1117" alt="succ openclaw plugin">
+  <br/><br/>
+  <em>succ-powered memory for OpenClaw agents</em>
+</p>
 
-OpenClaw plugin that replaces native memory with [succ](https://github.com/Vinaes/succ) — hybrid search (BM25 + semantic), typed memories, knowledge graph, dead-end tracking, temporal queries, web search, PRD pipeline, and more.
+<p align="center">
+  <a href="https://www.npmjs.com/package/@succ/openclaw-succ"><img src="https://img.shields.io/npm/v/@succ/openclaw-succ?style=flat-square&color=3fb950" alt="npm"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-FSL--1.1-blue?style=flat-square" alt="license"></a>
+  <a href="https://github.com/Vinaes/succ"><img src="https://img.shields.io/badge/powered%20by-succ-3fb950?style=flat-square" alt="powered by succ"></a>
+</p>
 
-## What it does
+<p align="center">
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#tools">Tools</a> •
+  <a href="#configuration">Configuration</a> •
+  <a href="#how-it-works">How It Works</a> •
+  <a href="#comparison">Comparison</a>
+</p>
 
-**Replaces** OpenClaw's native `memory_search` and `memory_get` with succ-powered versions that search across:
-- Source code (AST-aware semantic search)
-- Brain vault documentation
-- Structured memories (observations, decisions, learnings, errors, patterns)
+---
 
-**Adds 26 new tools** that OpenClaw doesn't have:
+> OpenClaw plugin that replaces native memory with [succ](https://github.com/Vinaes/succ) — hybrid search (BM25 + semantic), typed memories, knowledge graph, dead-end tracking, web search, PRD pipeline, and more.
+
+## Quick Start
+
+```bash
+npm install @succ/openclaw-succ succ
+```
+
+Add to `openclaw.json`:
+
+```json
+{
+  "plugins": {
+    "entries": {
+      "@succ/openclaw-succ": {
+        "autoInit": true
+      }
+    }
+  }
+}
+```
+
+Restart OpenClaw. The plugin will:
+1. Create `.succ/` directory in your workspace
+2. Initialize local embeddings (Transformers.js)
+3. Replace native memory tools with succ-powered versions
+4. Register all 35 tools
+5. Inject system prompt with tool usage guide
+
+## Tools
+
+**Replaces** OpenClaw's native `memory_search` and `memory_get` with succ-powered versions that search across source code, brain vault documentation, and structured memories.
+
+**Adds 33 new tools:**
 
 ### Core memory
 
 | Tool | Description |
 |------|-------------|
 | `memory_store` | Save typed memories with tags and auto-classification |
-| `memory_recall` | Semantic recall with tag/date filtering and temporal queries (`as_of_date`) |
+| `memory_recall` | Semantic recall with tag/date filtering and temporal queries |
 | `memory_forget` | Delete memories by ID, tag, or age |
 | `memory_dead_end` | Record failed approaches (auto-boosted 15% in search) |
+| `memory_similar` | Check for duplicates before storing |
+| `memory_batch_store` | Save multiple memories in one call |
+| `memory_batch_delete` | Delete multiple memories by IDs |
 
 ### Knowledge graph
 
 | Tool | Description |
 |------|-------------|
-| `memory_link` | 9 actions: create/delete/show links, auto-link similar, LLM-enrich, proximity, communities, centrality |
+| `memory_link` | 9 actions: create/delete/show links, auto-link, LLM-enrich, proximity, communities, centrality |
 | `memory_explore` | BFS graph traversal from any memory |
 
 ### Indexing & analysis
@@ -32,14 +79,17 @@ OpenClaw plugin that replaces native memory with [succ](https://github.com/Vinae
 | Tool | Description |
 |------|-------------|
 | `memory_index` | Index a documentation file for semantic search |
-| `memory_index_code` | Index a source code file for semantic code search |
+| `memory_index_code` | Index a source code file (AST-aware) |
 | `memory_analyze` | LLM-powered file analysis — generates docs in brain vault |
 | `memory_reindex` | Detect stale/deleted files, re-index automatically |
+| `memory_stale` | Check index freshness without re-indexing |
+| `memory_symbols` | Extract AST symbols (functions, classes, interfaces) via tree-sitter |
 
-### Web search
+### Web fetch & search
 
 | Tool | Description |
 |------|-------------|
+| `memory_fetch` | Fetch web page as clean markdown (Readability + Playwright fallback) |
 | `memory_quick_search` | Perplexity Sonar (~$1/MTok) — quick facts, version numbers |
 | `memory_web_search` | Perplexity Sonar Pro (~$3/$15 MTok) — complex queries, docs |
 | `memory_deep_research` | Perplexity Deep Research — 30+ sources, 30-120s |
@@ -55,17 +105,18 @@ OpenClaw plugin that replaces native memory with [succ](https://github.com/Vinae
 | `memory_config` | Show current configuration |
 | `memory_config_set` | Update config values (global or project scope) |
 
-### Checkpoints
+### Checkpoints & maintenance
 
 | Tool | Description |
 |------|-------------|
 | `memory_checkpoint` | Create/list backups of memories, documents, brain vault |
+| `memory_retention` | Analyze memory retention — decaying, access frequency, cleanup suggestions |
 
 ### Debug sessions
 
 | Tool | Description |
 |------|-------------|
-| `memory_debug` | Structured debugging with hypothesis testing — 12 actions, 14 languages, dead-end integration |
+| `memory_debug` | Structured debugging with hypothesis testing — 12 actions, 14 languages |
 
 ### PRD pipeline
 
@@ -77,17 +128,23 @@ OpenClaw plugin that replaces native memory with [succ](https://github.com/Vinae
 | `memory_prd_run` | Execute PRD with branch isolation and auto-commit |
 | `memory_prd_export` | Export to Obsidian with Mermaid diagrams |
 
-**Injects system prompt** with tool documentation (~1200 tokens) so the agent knows how to use all 28 tools without runtime discovery.
+## Configuration
 
-## Install
+| Option | Default | Description |
+|--------|---------|-------------|
+| `autoInit` | `true` | Auto-create `.succ/` if missing |
+| `markdownBridge` | `false` | Bidirectional sync: succ DB ↔ Markdown files |
+| `embeddingMode` | `"local"` | `local` (Transformers.js), `openrouter` (cloud), `custom` (Ollama) |
+| `storageBackend` | `"sqlite"` | `sqlite` (local) or `postgresql` |
+| `analyzeMode` | `"claude"` | LLM for `memory_analyze`: `claude`, `openrouter`, `local` |
+| `openrouterApiKey` | — | OpenRouter API key |
+| `maxSearchResults` | `10` | Default max results for memory_search |
+| `snippetMaxChars` | `700` | Max snippet length in search results |
 
-```bash
-npm install @succ/openclaw-succ succ
-```
+These are **convenience shortcuts** — they override the equivalent settings in `.succ/config.json`. For fine-grained control, edit `.succ/config.json` directly.
 
-## Configure
-
-Add to your `openclaw.json`:
+<details>
+<summary>Full config example</summary>
 
 ```json
 {
@@ -97,44 +154,25 @@ Add to your `openclaw.json`:
         "autoInit": true,
         "embeddingMode": "local",
         "storageBackend": "sqlite",
-        "analyzeMode": "claude"
+        "analyzeMode": "claude",
+        "maxSearchResults": 10,
+        "snippetMaxChars": 700
       }
     }
   }
 }
 ```
 
-Restart OpenClaw. The plugin will:
-1. Create `.succ/` directory in your workspace (if `autoInit: true`)
-2. Initialize local embeddings (Transformers.js, ~384 dimensions)
-3. Replace native memory tools with succ-powered versions
-4. Register all 28 tools
-5. Inject system prompt with tool usage guide
-6. Hook into compaction, file changes, and shutdown
+</details>
 
-## Config options
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `autoInit` | `true` | Auto-create `.succ/` if missing |
-| `markdownBridge` | `false` | Bidirectional sync: succ DB ↔ Markdown files |
-| `embeddingMode` | `"local"` | `local` (Transformers.js), `openrouter` (cloud), `custom` (Ollama) |
-| `storageBackend` | `"sqlite"` | `sqlite` (local, zero-config) or `postgresql` (requires connection via `.succ/config.json`) |
-| `analyzeMode` | `"claude"` | LLM for `memory_analyze`: `claude` (CLI), `openrouter` (cloud), `local` (Ollama/LM Studio) |
-| `openrouterApiKey` | — | OpenRouter API key (for `openrouter` embedding/analyze/web search modes) |
-| `maxSearchResults` | `10` | Default max results for memory_search |
-| `snippetMaxChars` | `700` | Max snippet length in search results |
-
-These options are **convenience shortcuts** — they override the equivalent settings in `.succ/config.json`. For fine-grained control (batch sizes, GPU, quality scoring thresholds, etc.), edit `.succ/config.json` directly.
-
-## How it works
+## How It Works
 
 ### memory_search (replaces native)
 
 Parallel search across three indexes, merged by similarity:
 
 ```
-query → ┌─ hybridSearchCode()     (source files)
+query → ┌─ hybridSearchCode()     (source files, AST-aware)
          ├─ hybridSearchDocs()     (brain vault)
          └─ hybridSearchMemories() (structured memories)
 
@@ -148,42 +186,29 @@ Tiered retrieval with workspace boundary validation:
 2. **`memory:123`** → retrieve memory by ID
 3. **Anything else** → semantic search, return best match
 
-### Compaction hook
+### Hooks
 
-Before OpenClaw compacts context, the plugin:
-1. Extracts a summary from recent messages
-2. Saves to succ with `valid_until: 7d` and tag `auto-compact`
-3. Memory survives context window reset
-
-### File change hook
-
-When files change in the workspace:
-1. Validates path is within workspace boundary
-2. Checks file extension is indexable
-3. Re-indexes with content hash comparison
+| Hook | What it does |
+|------|-------------|
+| **beforeCompact** | Extracts summary from recent messages, saves to succ with `valid_until: 7d` |
+| **fileChanged** | Validates path, checks extension, re-indexes with content hash comparison |
+| **shutdown** | Closes storage connections |
 
 ### System prompt injection
 
-If the host supports `api.prompts.appendSystem()`, the plugin injects a compact (~1200 token) reference covering all 28 tools by category with usage patterns. Gracefully skipped if not supported.
+If the host supports `api.prompts.appendSystem()`, injects a compact (~1200 token) reference covering all 35 tools with usage patterns. Gracefully skipped if not supported.
 
 ### Markdown bridge (optional)
 
 When `markdownBridge: true`:
 - New memories → exported to `.succ/brain/` as dated Markdown
 - File changes in `.succ/brain/` → imported back to succ DB
-- Preserves human-readable file transparency
 - Type detection from filename (`decision`, `learning`, `dead_end`, etc.)
 - Duplicate prevention via Memory ID footer
 
-## Security
+## Comparison
 
-- All file reads are validated against the workspace boundary (path traversal prevention)
-- `SUCC_PROJECT_ROOT` must be an absolute path
-- Markdown bridge imports are restricted to `.succ/brain/` directory
-- No shell command execution — all operations are in-process
-- Partial search failures are logged (not silently swallowed)
-
-## vs Native OpenClaw memory
+### vs Native OpenClaw memory
 
 | Feature | OpenClaw Native | @succ/openclaw-succ |
 |---------|-----------------|---------------------|
@@ -193,14 +218,12 @@ When `markdownBridge: true`:
 | Knowledge graph | None | 8 relation types, BFS traversal, community detection |
 | Dead-end tracking | Manual | Automatic with 15% boost |
 | Temporal queries | File timestamps | valid_from, valid_until, as_of_date |
-| Web search | None | 3 tiers (quick/quality/deep research) |
+| Web search | None | 3 tiers + web fetch |
 | PRD pipeline | None | Generate, track, execute with quality gates |
-| AI readiness | None | Scoring and improvement recommendations |
-| Cross-project | Per-workspace | Global memory mode |
-| Code search | General semantic | AST-aware |
-| Tools | 2 | 28 |
+| Code search | General semantic | AST-aware (tree-sitter, 13 languages) |
+| Tools | 2 | 35 |
 
-## vs Mem0 / Cognee
+### vs Mem0 / Cognee
 
 | | Mem0 | Cognee | succ |
 |---|---|---|---|
@@ -208,18 +231,18 @@ When `markdownBridge: true`:
 | Knowledge graph | No | Yes | Yes (9 operations) |
 | Typed memories | No | No | Yes (6 types) |
 | Dead-end tracking | No | No | Yes |
-| Code-aware search | No | No | Yes |
+| Code-aware search | No | No | Yes (AST) |
 | Temporal queries | No | No | Yes |
 | Web search | No | No | Yes (3 tiers) |
 | PRD pipeline | No | No | Yes |
 | Local-first | Partial | No | Yes |
 
-## Plugin manifest
+## Security
 
-The `openclaw.plugin.json` file provides auto-discovery metadata:
-- Full config schema with types, defaults, and descriptions
-- Capabilities declaration (replaced tools, registered tools, hooks, prompts)
-- Engine requirements and peer dependencies
+- All file reads validated against workspace boundary (path traversal prevention)
+- `SUCC_PROJECT_ROOT` must be an absolute path
+- Markdown bridge imports restricted to `.succ/brain/` directory
+- No shell command execution — all operations are in-process
 
 ## Testing
 
@@ -227,22 +250,14 @@ The `openclaw.plugin.json` file provides auto-discovery metadata:
 npm test
 ```
 
-145 tests across 19 test files covering:
-- All 28 tools (unit tests with mocked succ storage)
-- Registration flow (config override order, tool counts, hooks)
-- System prompt generation (XML structure, tool coverage, compactness)
-- Markdown bridge (export/import, slug generation, type detection, security)
-- Compaction hook (summary extraction, TTL, error resilience, message windowing)
-- File change hook (extension filtering, ignored directories, SHA-256 hashing, security)
-- Security (path traversal prevention, workspace boundary, brain vault boundary)
-- Init (auto-create `.succ/`, skip if exists)
+160 tests across 22 test files covering all 35 tools, registration flow, system prompt, markdown bridge, hooks, security, and initialization.
 
 ## Requirements
 
 - Node.js >= 22
 - OpenClaw >= 0.1.0
-- succ >= 1.1.0
+- succ >= 1.3.0
 
 ## License
 
-FSL-1.1-Apache-2.0 (same as succ)
+[FSL-1.1-Apache-2.0](LICENSE) — same as succ.

@@ -5,15 +5,17 @@ vi.mock('succ/api', () => ({
   indexCodeFile: vi.fn(),
   reindexFiles: vi.fn(),
   getProjectRoot: vi.fn(),
+  getStaleFiles: vi.fn(),
 }));
 
-import { memoryAnalyze, memoryIndexCode, memoryReindex } from '../src/tools/memory-analyze.js';
-import { analyzeFile, indexCodeFile, reindexFiles, getProjectRoot } from 'succ/api';
+import { memoryAnalyze, memoryIndexCode, memoryReindex, memoryStale } from '../src/tools/memory-analyze.js';
+import { analyzeFile, indexCodeFile, reindexFiles, getProjectRoot, getStaleFiles } from 'succ/api';
 
 const mockAnalyze = vi.mocked(analyzeFile);
 const mockIndexCode = vi.mocked(indexCodeFile);
 const mockReindex = vi.mocked(reindexFiles);
 const mockRoot = vi.mocked(getProjectRoot);
+const mockStale = vi.mocked(getStaleFiles);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -56,5 +58,31 @@ describe('memoryReindex', () => {
     const result = await memoryReindex();
     expect(result).toEqual({ reindexed: 3, removed: 1 });
     expect(mockReindex).toHaveBeenCalledWith('/project');
+  });
+});
+
+describe('memoryStale', () => {
+  it('returns stale and deleted files', async () => {
+    mockRoot.mockReturnValue('/project');
+    mockStale.mockResolvedValue({
+      stale: [{ path: 'src/old.ts' }, { path: 'src/changed.ts' }],
+      deleted: [{ path: 'src/removed.ts' }],
+    } as any);
+
+    const result = await memoryStale();
+    expect(result.stale).toEqual(['src/old.ts', 'src/changed.ts']);
+    expect(result.deleted).toEqual(['src/removed.ts']);
+    expect(result.message).toContain('2 stale');
+    expect(result.message).toContain('1 deleted');
+  });
+
+  it('handles empty results', async () => {
+    mockRoot.mockReturnValue('/project');
+    mockStale.mockResolvedValue({ stale: [], deleted: [] } as any);
+
+    const result = await memoryStale();
+    expect(result.stale).toEqual([]);
+    expect(result.deleted).toEqual([]);
+    expect(result.message).toContain('0 stale');
   });
 });

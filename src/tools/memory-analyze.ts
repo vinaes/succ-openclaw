@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { analyzeFile, indexCodeFile, reindexFiles, getProjectRoot } from 'succ/api';
+import { analyzeFile, indexCodeFile, reindexFiles, getProjectRoot, getStaleFiles } from 'succ/api';
 
 export const memoryAnalyzeSchema = z.object({
   file: z.string().describe('File path to analyze with LLM'),
@@ -12,6 +12,8 @@ export const memoryIndexCodeSchema = z.object({
 });
 
 export const memoryReindexSchema = z.object({});
+
+export const memoryStaleSchema = z.object({});
 
 type MemoryAnalyzeParams = z.infer<typeof memoryAnalyzeSchema>;
 type MemoryIndexCodeParams = z.infer<typeof memoryIndexCodeSchema>;
@@ -45,4 +47,24 @@ export async function memoryReindex(): Promise<any> {
   const projectRoot = getProjectRoot();
   const result = await reindexFiles(projectRoot);
   return result;
+}
+
+/**
+ * Check index freshness — find stale and deleted files without running full reindex.
+ */
+export async function memoryStale(): Promise<{
+  stale: string[];
+  deleted: string[];
+  message: string;
+}> {
+  const projectRoot = getProjectRoot();
+  const result = await getStaleFiles(projectRoot);
+  const stale = (result as any).stale?.map((f: any) => f.path || f) || [];
+  const deleted = (result as any).deleted?.map((f: any) => f.path || f) || [];
+
+  return {
+    stale,
+    deleted,
+    message: `${stale.length} stale, ${deleted.length} deleted files detected`,
+  };
 }

@@ -9,7 +9,7 @@ describe('generateSystemPrompt', () => {
     expect(prompt).toMatch(/<\/succ-memory>$/);
   });
 
-  it('documents all 27 tools', () => {
+  it('documents all 34 tools', () => {
     const tools = [
       'memory_search',
       'memory_get',
@@ -17,12 +17,18 @@ describe('generateSystemPrompt', () => {
       'memory_recall',
       'memory_forget',
       'memory_dead_end',
+      'memory_similar',
+      'memory_batch_store',
+      'memory_batch_delete',
       'memory_link',
       'memory_explore',
       'memory_index',
       'memory_index_code',
       'memory_analyze',
       'memory_reindex',
+      'memory_stale',
+      'memory_symbols',
+      'memory_fetch',
       'memory_quick_search',
       'memory_web_search',
       'memory_deep_research',
@@ -33,6 +39,7 @@ describe('generateSystemPrompt', () => {
       'memory_config',
       'memory_config_set',
       'memory_checkpoint',
+      'memory_retention',
       'memory_prd_generate',
       'memory_prd_list',
       'memory_prd_status',
@@ -49,9 +56,10 @@ describe('generateSystemPrompt', () => {
     expect(prompt).toContain('Store & Recall');
     expect(prompt).toContain('Knowledge Graph');
     expect(prompt).toContain('Indexing & Analysis');
-    expect(prompt).toContain('Web Search');
+    expect(prompt).toContain('Web Fetch & Search');
     expect(prompt).toContain('Status & Config');
-    expect(prompt).toContain('Checkpoints');
+    expect(prompt).toContain('Checkpoints & Maintenance');
+    expect(prompt).toContain('Debug Sessions');
     expect(prompt).toContain('PRD Pipeline');
   });
 

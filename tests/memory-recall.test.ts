@@ -6,14 +6,24 @@ vi.mock('succ/api', () => ({
   getEmbedding: vi.fn(),
   getRecentMemories: vi.fn(),
   getRecentGlobalMemories: vi.fn(),
+  findSimilarMemory: vi.fn(),
+  findSimilarGlobalMemory: vi.fn(),
 }));
 
-import { memoryRecall } from '../src/tools/memory-recall.js';
-import { hybridSearchMemories, hybridSearchGlobalMemories, getEmbedding } from 'succ/api';
+import { memoryRecall, memorySimilar } from '../src/tools/memory-recall.js';
+import {
+  hybridSearchMemories,
+  hybridSearchGlobalMemories,
+  getEmbedding,
+  findSimilarMemory,
+  findSimilarGlobalMemory,
+} from 'succ/api';
 
 const mockLocal = vi.mocked(hybridSearchMemories);
 const mockGlobal = vi.mocked(hybridSearchGlobalMemories);
 const mockEmbed = vi.mocked(getEmbedding);
+const mockFindSimilar = vi.mocked(findSimilarMemory);
+const mockFindSimilarGlobal = vi.mocked(findSimilarGlobalMemory);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -78,5 +88,40 @@ describe('memoryRecall', () => {
 
     const results = await memoryRecall({ query: 'nothing', limit: 5 });
     expect(results).toEqual([]);
+  });
+});
+
+describe('memorySimilar', () => {
+  it('returns found=true with match when similar memory exists', async () => {
+    mockFindSimilar.mockResolvedValue({
+      id: 42,
+      content: 'existing memory',
+      similarity: 0.92,
+    } as any);
+
+    const result = await memorySimilar({ content: 'new content', threshold: 0.85, global: false });
+
+    expect(result.found).toBe(true);
+    expect(result.match?.id).toBe(42);
+    expect(result.match?.similarity).toBe(0.92);
+    expect(mockFindSimilar).toHaveBeenCalledWith([0.1, 0.2], 0.85);
+  });
+
+  it('returns found=false when no similar memory', async () => {
+    mockFindSimilar.mockResolvedValue(null as any);
+
+    const result = await memorySimilar({ content: 'unique content', threshold: 0.85, global: false });
+
+    expect(result.found).toBe(false);
+    expect(result.match).toBeUndefined();
+  });
+
+  it('uses global search when global=true', async () => {
+    mockFindSimilarGlobal.mockResolvedValue(null as any);
+
+    await memorySimilar({ content: 'test', threshold: 0.85, global: true });
+
+    expect(mockFindSimilarGlobal).toHaveBeenCalled();
+    expect(mockFindSimilar).not.toHaveBeenCalled();
   });
 });
