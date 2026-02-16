@@ -5,7 +5,8 @@ import {
   getEmbedding,
   getFileHash,
   setFileHash,
-} from 'succ/api';
+  invalidateDocsBm25Index,
+} from '@vinaes/succ/api';
 import { createHash } from 'node:crypto';
 import { assertPathWithinWorkspace } from '../security.js';
 
@@ -44,6 +45,7 @@ export async function memoryIndex(params: MemoryIndexParams): Promise<{ message:
   const lineCount = content.split('\n').length;
   await upsertDocument(filePath, 0, content, 1, lineCount, embedding);
   await setFileHash(filePath, hash);
+  invalidateDocsBm25Index();
 
   return { message: `Indexed: ${filePath}`, indexed: true };
 }

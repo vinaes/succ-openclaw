@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { initStorageDispatcher, closeStorageDispatcher, setConfigOverride } from 'succ/api';
+import { initStorageDispatcher, closeStorageDispatcher, setConfigOverride } from '@vinaes/succ/api';
 import { initializeSuccProject, isSuccInitialized } from './init.js';
 import { memorySearch, memorySearchSchema } from './tools/memory-search.js';
 import { memoryGet, memoryGetSchema } from './tools/memory-get.js';
@@ -67,7 +67,7 @@ import { memoryRetention, memoryRetentionSchema } from './tools/memory-retention
 import { onBeforeCompact } from './hooks/before-compact.js';
 import { onFileChanged } from './hooks/file-changed.js';
 import { generateSystemPrompt } from './hooks/system-prompt.js';
-import { getWebSearchHistory } from 'succ/api';
+import { getWebSearchHistory } from '@vinaes/succ/api';
 import { DEFAULT_CONFIG, type OpenClawPluginAPI, type SuccPluginConfig } from './types.js';
 
 /**

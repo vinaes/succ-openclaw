@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   hybridSearchCode: vi.fn(),
   hybridSearchDocs: vi.fn(),
   hybridSearchMemories: vi.fn(),
@@ -8,7 +8,7 @@ vi.mock('succ/api', () => ({
 }));
 
 import { memorySearch } from '../src/tools/memory-search.js';
-import { hybridSearchCode, hybridSearchDocs, hybridSearchMemories, getEmbedding } from 'succ/api';
+import { hybridSearchCode, hybridSearchDocs, hybridSearchMemories, getEmbedding } from '@vinaes/succ/api';
 
 const mockGetEmbedding = vi.mocked(getEmbedding);
 const mockSearchCode = vi.mocked(hybridSearchCode);

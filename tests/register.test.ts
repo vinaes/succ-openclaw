@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   initStorageDispatcher: vi.fn(),
   closeStorageDispatcher: vi.fn(),
   setConfigOverride: vi.fn(),
@@ -123,7 +123,7 @@ vi.mock('../src/hooks/file-changed.js', () => ({
 }));
 
 import register from '../src/index.js';
-import { initStorageDispatcher, setConfigOverride } from 'succ/api';
+import { initStorageDispatcher, setConfigOverride } from '@vinaes/succ/api';
 import { initializeSuccProject, isSuccInitialized } from '../src/init.js';
 import type { OpenClawPluginAPI } from '../src/types.js';
 

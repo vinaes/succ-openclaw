@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   analyzeRetention: vi.fn(),
   getAllMemoriesForRetention: vi.fn(),
 }));
 
 import { memoryRetention } from '../src/tools/memory-retention.js';
-import { analyzeRetention, getAllMemoriesForRetention } from 'succ/api';
+import { analyzeRetention, getAllMemoriesForRetention } from '@vinaes/succ/api';
 
 const mockRetention = vi.mocked(analyzeRetention);
 const mockGetMemories = vi.mocked(getAllMemoriesForRetention);

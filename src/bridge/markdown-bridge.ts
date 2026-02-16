@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { getRecentMemories, saveMemory, getEmbedding } from 'succ/api';
-import type { MemoryType } from 'succ/api';
+import { getRecentMemories, saveMemory, getEmbedding } from '@vinaes/succ/api';
+import type { MemoryType } from '@vinaes/succ/api';
 import { assertPathWithinBrainVault } from '../security.js';
 
 /**

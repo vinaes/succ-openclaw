@@ -34,7 +34,7 @@
     "url": "https://github.com/Vinaes/succ-openclaw/issues"
   },
   "peerDependencies": {
-    "succ": ">=1.3.0"
+    "@vinaes/succ": ">=1.3.0"
   },
   "dependencies": {
     "zod": "^3.25.0"

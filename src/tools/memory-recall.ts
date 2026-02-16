@@ -7,7 +7,8 @@ import {
   getRecentGlobalMemories,
   findSimilarMemory,
   findSimilarGlobalMemory,
-} from 'succ/api';
+  incrementMemoryAccess,
+} from '@vinaes/succ/api';
 
 export const memoryRecallSchema = z.object({
   query: z.string().describe('What to recall (semantic search)'),
@@ -62,10 +63,18 @@ export async function memoryRecall(params: MemoryRecallParams): Promise<any[]> {
     });
   }
 
-  return results
+  const sorted = results
     .sort((a: any, b: any) => (b.similarity ?? 0) - (a.similarity ?? 0))
-    .slice(0, limit)
-    .map((r: any) => ({
+    .slice(0, limit);
+
+  // Track access for retention scoring
+  for (const r of sorted) {
+    if (r.id && !r.is_global) {
+      incrementMemoryAccess(r.id).catch(() => {});
+    }
+  }
+
+  return sorted.map((r: any) => ({
       id: r.id,
       content: r.content,
       type: r.type || 'observation',

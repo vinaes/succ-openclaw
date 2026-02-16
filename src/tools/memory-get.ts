@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import { z } from 'zod';
-import { getMemoryById } from 'succ/api';
+import { getMemoryById, incrementMemoryAccess } from '@vinaes/succ/api';
 import { memorySearch } from './memory-search.js';
 import { assertPathWithinWorkspace } from '../security.js';
 import type { OpenClawGetResult } from '../types.js';
@@ -47,6 +47,7 @@ export async function memoryGet(params: MemoryGetParams): Promise<OpenClawGetRes
     if (!memory) {
       throw new Error(`Memory ${id} not found`);
     }
+    incrementMemoryAccess(id).catch(() => {});
     return {
       content: memory.content,
       path: `memory:${id}`,

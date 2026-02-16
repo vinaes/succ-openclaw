@@ -8,7 +8,7 @@ import {
   runPrd,
   exportPrdToObsidian,
   exportAllPrds,
-} from 'succ/api';
+} from '@vinaes/succ/api';
 
 export const memoryPrdGenerateSchema = z.object({
   description: z.string().describe('Feature description (e.g., "Add user auth with JWT")'),

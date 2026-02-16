@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createCheckpoint, listCheckpoints } from 'succ/api';
+import { createCheckpoint, listCheckpoints } from '@vinaes/succ/api';
 
 export const memoryCheckpointSchema = z.object({
   action: z.enum(['create', 'list']).describe('Create a backup or list available checkpoints'),

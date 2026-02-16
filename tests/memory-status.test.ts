@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   getStats: vi.fn(),
   getMemoryStats: vi.fn(),
   isProjectInitialized: vi.fn(),
@@ -26,7 +26,7 @@ import {
   formatAIReadinessScore,
   getConfigDisplay,
   formatConfigDisplay,
-} from 'succ/api';
+} from '@vinaes/succ/api';
 
 const mockGetStats = vi.mocked(getStats);
 const mockMemStats = vi.mocked(getMemoryStats);

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { saveMemory, getEmbedding } from 'succ/api';
+import { saveMemory, getEmbedding } from '@vinaes/succ/api';
 import { MEMORY_TYPES, type MemoryType } from '../types.js';
 
 export const memoryStoreSchema = z.object({

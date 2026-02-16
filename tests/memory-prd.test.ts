@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   generatePrd: vi.fn(),
   listPrds: vi.fn(),
   findLatestPrd: vi.fn(),
@@ -18,7 +18,7 @@ import {
   memoryPrdRun,
   memoryPrdExport,
 } from '../src/tools/memory-prd.js';
-import { generatePrd, listPrds, findLatestPrd, loadPrd, loadTasks, runPrd, exportPrdToObsidian, exportAllPrds } from 'succ/api';
+import { generatePrd, listPrds, findLatestPrd, loadPrd, loadTasks, runPrd, exportPrdToObsidian, exportAllPrds } from '@vinaes/succ/api';
 
 const mockGenerate = vi.mocked(generatePrd);
 const mockListPrds = vi.mocked(listPrds);

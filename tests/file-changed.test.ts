@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   upsertDocument: vi.fn(),
   getEmbedding: vi.fn(),
   setFileHash: vi.fn(),
@@ -14,7 +14,7 @@ vi.mock('../src/security.js', () => ({
 }));
 
 import { onFileChanged } from '../src/hooks/file-changed.js';
-import { upsertDocument, getEmbedding, setFileHash } from 'succ/api';
+import { upsertDocument, getEmbedding, setFileHash } from '@vinaes/succ/api';
 import { assertPathWithinWorkspace } from '../src/security.js';
 
 const mockUpsertDoc = vi.mocked(upsertDocument);

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { extractSymbolsFromFile } from 'succ/api';
-import type { SymbolInfo } from 'succ/api';
+import { extractSymbolsFromFile } from '@vinaes/succ/api';
+import type { SymbolInfo } from '@vinaes/succ/api';
 import { assertPathWithinWorkspace } from '../security.js';
 
 export const memorySymbolsSchema = z.object({

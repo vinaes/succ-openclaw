@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   createCheckpoint: vi.fn(),
   listCheckpoints: vi.fn(),
 }));
 
 import { memoryCheckpoint } from '../src/tools/memory-checkpoint.js';
-import { createCheckpoint, listCheckpoints } from 'succ/api';
+import { createCheckpoint, listCheckpoints } from '@vinaes/succ/api';
 
 const mockCreate = vi.mocked(createCheckpoint);
 const mockList = vi.mocked(listCheckpoints);

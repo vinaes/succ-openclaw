@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { saveMemoriesBatch, deleteMemoriesByIds, getEmbeddings } from 'succ/api';
+import { saveMemoriesBatch, deleteMemoriesByIds, getEmbeddings } from '@vinaes/succ/api';
 import { MEMORY_TYPES } from '../types.js';
 
 export const memoryBatchStoreSchema = z.object({

@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   saveMemory: vi.fn(),
   getEmbedding: vi.fn(),
 }));
 
 import { memoryDeadEnd } from '../src/tools/memory-dead-end.js';
-import { saveMemory, getEmbedding } from 'succ/api';
+import { saveMemory, getEmbedding } from '@vinaes/succ/api';
 
 const mockSaveMemory = vi.mocked(saveMemory);
 const mockGetEmbedding = vi.mocked(getEmbedding);

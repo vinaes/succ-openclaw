@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   analyzeFile: vi.fn(),
   indexCodeFile: vi.fn(),
   reindexFiles: vi.fn(),
@@ -9,7 +9,7 @@ vi.mock('succ/api', () => ({
 }));
 
 import { memoryAnalyze, memoryIndexCode, memoryReindex, memoryStale } from '../src/tools/memory-analyze.js';
-import { analyzeFile, indexCodeFile, reindexFiles, getProjectRoot, getStaleFiles } from 'succ/api';
+import { analyzeFile, indexCodeFile, reindexFiles, getProjectRoot, getStaleFiles } from '@vinaes/succ/api';
 
 const mockAnalyze = vi.mocked(analyzeFile);
 const mockIndexCode = vi.mocked(indexCodeFile);

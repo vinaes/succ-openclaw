@@ -1,4 +1,4 @@
-import { saveMemory, getEmbedding } from 'succ/api';
+import { saveMemory, getEmbedding } from '@vinaes/succ/api';
 
 /**
  * Compaction hook — called before OpenClaw compacts conversation context.

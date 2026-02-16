@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   createMemoryLink: vi.fn(),
   deleteMemoryLink: vi.fn(),
   getMemoryWithLinks: vi.fn(),
@@ -23,7 +23,7 @@ import {
   createProximityLinks,
   detectCommunities,
   updateCentralityCache,
-} from 'succ/api';
+} from '@vinaes/succ/api';
 
 const mockCreate = vi.mocked(createMemoryLink);
 const mockDelete = vi.mocked(deleteMemoryLink);

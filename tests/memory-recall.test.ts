@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   hybridSearchMemories: vi.fn(),
   hybridSearchGlobalMemories: vi.fn(),
   getEmbedding: vi.fn(),
@@ -8,6 +8,7 @@ vi.mock('succ/api', () => ({
   getRecentGlobalMemories: vi.fn(),
   findSimilarMemory: vi.fn(),
   findSimilarGlobalMemory: vi.fn(),
+  incrementMemoryAccess: vi.fn().mockResolvedValue(undefined),
 }));
 
 import { memoryRecall, memorySimilar } from '../src/tools/memory-recall.js';
@@ -17,7 +18,7 @@ import {
   getEmbedding,
   findSimilarMemory,
   findSimilarGlobalMemory,
-} from 'succ/api';
+} from '@vinaes/succ/api';
 
 const mockLocal = vi.mocked(hybridSearchMemories);
 const mockGlobal = vi.mocked(hybridSearchGlobalMemories);

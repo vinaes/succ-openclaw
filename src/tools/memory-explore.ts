@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { findConnectedMemories, getMemoryById } from 'succ/api';
+import { findConnectedMemories, getMemoryById } from '@vinaes/succ/api';
 
 export const memoryExploreSchema = z.object({
   memoryId: z.number().describe('Starting memory ID'),

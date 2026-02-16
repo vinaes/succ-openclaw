@@ -11,7 +11,7 @@ import {
   formatAIReadinessScore,
   getConfigDisplay,
   formatConfigDisplay,
-} from 'succ/api';
+} from '@vinaes/succ/api';
 
 export const memoryStatusSchema = z.object({});
 export const memoryStatsSchema = z.object({});

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { callOpenRouterSearch, saveMemory, getEmbedding } from 'succ/api';
+import { callOpenRouterSearch, saveMemory, getEmbedding, recordWebSearch } from '@vinaes/succ/api';
 
 export const memoryQuickSearchSchema = z.object({
   query: z.string().describe('Simple factual query'),
@@ -40,6 +40,7 @@ type DeepResearchParams = z.infer<typeof memoryDeepResearchSchema>;
 async function doSearch(
   query: string,
   model: string,
+  toolName: 'succ_quick_search' | 'succ_web_search',
   systemPrompt: string | undefined,
   maxTokens: number,
   saveToMemory: boolean,
@@ -52,6 +53,18 @@ async function doSearch(
 
   const response = await callOpenRouterSearch(messages, model, 120000, maxTokens, 0.1);
   const answer = response.content || 'No response';
+
+  recordWebSearch({
+    tool_name: toolName,
+    model,
+    query,
+    prompt_tokens: response.usage?.prompt_tokens ?? 0,
+    completion_tokens: response.usage?.completion_tokens ?? 0,
+    estimated_cost_usd: 0,
+    citations_count: 0,
+    has_reasoning: false,
+    response_length_chars: answer.length,
+  }).catch(() => {});
 
   if (saveToMemory) {
     try {
@@ -68,13 +81,14 @@ async function doSearch(
 }
 
 export async function memoryQuickSearch(params: QuickSearchParams): Promise<{ answer: string; model: string }> {
-  return doSearch(params.query, 'perplexity/sonar', params.system_prompt, params.max_tokens, params.save_to_memory);
+  return doSearch(params.query, 'perplexity/sonar', 'succ_quick_search', params.system_prompt, params.max_tokens, params.save_to_memory);
 }
 
 export async function memoryWebSearch(params: WebSearchParams): Promise<{ answer: string; model: string }> {
   return doSearch(
     params.query,
     params.model || 'perplexity/sonar-pro',
+    'succ_web_search',
     params.system_prompt,
     params.max_tokens,
     params.save_to_memory,
@@ -92,6 +106,18 @@ export async function memoryDeepResearch(params: DeepResearchParams): Promise<{ 
   const response = await callOpenRouterSearch(messages, model, 300000, params.max_tokens, 0.1);
   const answer = response.content || 'No response';
   const reasoning = params.include_reasoning ? response.reasoning : undefined;
+
+  recordWebSearch({
+    tool_name: 'succ_deep_research',
+    model,
+    query: params.query,
+    prompt_tokens: response.usage?.prompt_tokens ?? 0,
+    completion_tokens: response.usage?.completion_tokens ?? 0,
+    estimated_cost_usd: 0,
+    citations_count: 0,
+    has_reasoning: !!reasoning,
+    response_length_chars: answer.length,
+  }).catch(() => {});
 
   if (params.save_to_memory) {
     try {

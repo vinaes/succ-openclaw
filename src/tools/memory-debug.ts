@@ -4,14 +4,15 @@ import {
   ensureDebugsDir,
   saveSession,
   loadSession,
+  deleteSession,
   listSessions,
   findActiveSession,
   appendSessionLog,
   loadSessionLog,
   detectLanguage,
   generateLogStatement,
-} from 'succ/api';
-import type { DebugSession, Hypothesis, DebugLanguage } from 'succ/api';
+} from '@vinaes/succ/api';
+import type { DebugSession, Hypothesis, DebugLanguage } from '@vinaes/succ/api';
 
 // ============================================================================
 // Schema
@@ -210,6 +211,8 @@ export async function memoryDebug(params: MemoryDebugParams): Promise<any> {
       session.status = 'abandoned';
       saveSession(session);
       appendSessionLog(session.id, 'Session abandoned');
+      // Clean up session files from disk
+      deleteSession(session.id);
       return { session_id: session.id, status: 'abandoned' };
     }
 

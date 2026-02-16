@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { saveMemory, getEmbedding } from 'succ/api';
+import { saveMemory, getEmbedding } from '@vinaes/succ/api';
 
 export const memoryDeadEndSchema = z.object({
   approach: z.string().describe('What was tried (e.g., "Using Redis for session storage")'),

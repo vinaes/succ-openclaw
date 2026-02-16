@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { fetchAsMarkdown } from 'succ/api';
+import { fetchAsMarkdown } from '@vinaes/succ/api';
 
 export const memoryFetchSchema = z.object({
   url: z.string().describe('URL to fetch and convert to markdown'),

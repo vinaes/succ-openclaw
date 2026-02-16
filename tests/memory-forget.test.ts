@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   deleteMemory: vi.fn(),
   deleteMemoriesOlderThan: vi.fn(),
   deleteMemoriesByTag: vi.fn(),
 }));
 
 import { memoryForget } from '../src/tools/memory-forget.js';
-import { deleteMemory, deleteMemoriesOlderThan, deleteMemoriesByTag } from 'succ/api';
+import { deleteMemory, deleteMemoriesOlderThan, deleteMemoriesByTag } from '@vinaes/succ/api';
 
 const mockDeleteMemory = vi.mocked(deleteMemory);
 const mockDeleteOlderThan = vi.mocked(deleteMemoriesOlderThan);

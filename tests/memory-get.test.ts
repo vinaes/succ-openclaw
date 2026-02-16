@@ -1,12 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   getMemoryById: vi.fn(),
   hybridSearchCode: vi.fn(),
   hybridSearchDocs: vi.fn(),
   hybridSearchMemories: vi.fn(),
   getEmbedding: vi.fn(),
+  incrementMemoryAccess: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('node:fs', async () => {
@@ -24,7 +25,7 @@ vi.mock('node:fs', async () => {
 });
 
 import { memoryGet } from '../src/tools/memory-get.js';
-import { getMemoryById, hybridSearchCode, hybridSearchDocs, hybridSearchMemories, getEmbedding } from 'succ/api';
+import { getMemoryById, hybridSearchCode, hybridSearchDocs, hybridSearchMemories, getEmbedding } from '@vinaes/succ/api';
 
 const mockGetMemoryById = vi.mocked(getMemoryById);
 const mockExistsSync = vi.mocked(fs.existsSync);

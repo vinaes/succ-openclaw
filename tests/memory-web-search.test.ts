@@ -1,13 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   callOpenRouterSearch: vi.fn(),
   saveMemory: vi.fn(),
   getEmbedding: vi.fn(),
+  recordWebSearch: vi.fn().mockResolvedValue(1),
 }));
 
 import { memoryQuickSearch, memoryWebSearch, memoryDeepResearch } from '../src/tools/memory-web-search.js';
-import { callOpenRouterSearch, saveMemory, getEmbedding } from 'succ/api';
+import { callOpenRouterSearch, saveMemory, getEmbedding } from '@vinaes/succ/api';
 
 const mockSearch = vi.mocked(callOpenRouterSearch);
 const mockSave = vi.mocked(saveMemory);

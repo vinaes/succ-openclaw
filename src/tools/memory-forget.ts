@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { deleteMemory, deleteMemoriesOlderThan, deleteMemoriesByTag } from 'succ/api';
+import { deleteMemory, deleteMemoriesOlderThan, deleteMemoriesByTag } from '@vinaes/succ/api';
 
 export const memoryForgetSchema = z.object({
   id: z.number().optional().describe('Delete memory by ID'),

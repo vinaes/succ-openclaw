@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { analyzeFile, indexCodeFile, reindexFiles, getProjectRoot, getStaleFiles } from 'succ/api';
+import { analyzeFile, indexCodeFile, reindexFiles, getProjectRoot, getStaleFiles } from '@vinaes/succ/api';
 
 export const memoryAnalyzeSchema = z.object({
   file: z.string().describe('File path to analyze with LLM'),

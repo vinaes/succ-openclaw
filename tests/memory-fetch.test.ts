@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   fetchAsMarkdown: vi.fn(),
 }));
 
 import { memoryFetch } from '../src/tools/memory-fetch.js';
-import { fetchAsMarkdown } from 'succ/api';
+import { fetchAsMarkdown } from '@vinaes/succ/api';
 
 const mockFetch = vi.mocked(fetchAsMarkdown);
 

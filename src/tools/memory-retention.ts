@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { analyzeRetention, getAllMemoriesForRetention } from 'succ/api';
+import { analyzeRetention, getAllMemoriesForRetention } from '@vinaes/succ/api';
 
 export const memoryRetentionSchema = z.object({});
 

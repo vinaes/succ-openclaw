@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   getRecentMemories: vi.fn(),
   saveMemory: vi.fn(),
   getEmbedding: vi.fn(),
@@ -14,7 +14,7 @@ vi.mock('../src/security.js', () => ({
 }));
 
 import { exportMemoriesToMarkdown, importMarkdownToMemory } from '../src/bridge/markdown-bridge.js';
-import { getRecentMemories, saveMemory, getEmbedding } from 'succ/api';
+import { getRecentMemories, saveMemory, getEmbedding } from '@vinaes/succ/api';
 import { assertPathWithinBrainVault } from '../src/security.js';
 
 const mockGetRecent = vi.mocked(getRecentMemories);

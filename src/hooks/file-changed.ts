@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { upsertDocument, getEmbedding, setFileHash } from 'succ/api';
+import { upsertDocument, getEmbedding, setFileHash } from '@vinaes/succ/api';
 import { createHash } from 'node:crypto';
 import { assertPathWithinWorkspace } from '../security.js';
 

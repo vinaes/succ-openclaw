@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('succ/api', () => ({
+vi.mock('@vinaes/succ/api', () => ({
   saveMemoriesBatch: vi.fn(),
   deleteMemoriesByIds: vi.fn(),
   getEmbeddings: vi.fn(),
 }));
 
 import { memoryBatchStore, memoryBatchDelete } from '../src/tools/memory-batch.js';
-import { saveMemoriesBatch, deleteMemoriesByIds, getEmbeddings } from 'succ/api';
+import { saveMemoriesBatch, deleteMemoriesByIds, getEmbeddings } from '@vinaes/succ/api';
 
 const mockSaveBatch = vi.mocked(saveMemoriesBatch);
 const mockDeleteBatch = vi.mocked(deleteMemoriesByIds);

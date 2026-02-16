@@ -10,8 +10,8 @@ import {
   detectCommunities,
   updateCentralityCache,
   exportGraphSilent,
-} from 'succ/api';
-import type { LinkRelation } from 'succ/api';
+} from '@vinaes/succ/api';
+import type { LinkRelation } from '@vinaes/succ/api';
 import { RELATION_TYPES } from '../types.js';
 
 export const memoryLinkSchema = z.object({

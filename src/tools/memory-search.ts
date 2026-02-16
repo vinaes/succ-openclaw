@@ -4,7 +4,7 @@ import {
   hybridSearchDocs,
   hybridSearchMemories,
   getEmbedding,
-} from 'succ/api';
+} from '@vinaes/succ/api';
 import type { OpenClawSearchResult } from '../types.js';
 
 export const memorySearchSchema = z.object({
